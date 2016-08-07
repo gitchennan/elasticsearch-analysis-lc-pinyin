@@ -1,37 +1,32 @@
 package org.lc.lucene;
 
-import org.lc.core.Lexeme;
-import org.lc.core.LcPinyinSegmenter;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
+import org.lc.core.ISegmenter;
+import org.lc.core.Lexeme;
 
 import java.io.IOException;
 import java.io.Reader;
 
-public final class LcPinyinTokenizer extends Tokenizer {
-    //处理模式
-    private String analysisMode;
-    private int skippedPositions;
+public abstract class AbstractLcPinyinTokenizer extends Tokenizer {
     //记录最后一个词元的结束位置
     private int endPosition;
-    private final LcPinyinSegmenter lcPinyinSegmenter;
     private final CharTermAttribute termAtt = this.addAttribute(CharTermAttribute.class);
     private final OffsetAttribute offsetAtt = this.addAttribute(OffsetAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = this.addAttribute(PositionIncrementAttribute.class);
 
-    public LcPinyinTokenizer(String analysisMode, Reader input) {
+    public AbstractLcPinyinTokenizer(Reader input) {
         super(input);
-        this.analysisMode = analysisMode;
-        lcPinyinSegmenter = new LcPinyinSegmenter(analysisMode, input);
     }
+
+    protected abstract ISegmenter getSegmenter();
 
     @Override
     public boolean incrementToken() throws IOException {
         clearAttributes();
-        skippedPositions = 0;
-        Lexeme lexeme = lcPinyinSegmenter.next();
+        Lexeme lexeme = getSegmenter().next();
         if (lexeme != null) {
             //设置词元文本
             termAtt.append(lexeme.getLexemeText());
@@ -39,7 +34,8 @@ public final class LcPinyinTokenizer extends Tokenizer {
             termAtt.setLength(lexeme.getLength());
             //设置词元位移
             offsetAtt.setOffset(correctOffset(lexeme.beginPosition()), correctOffset(lexeme.endPosition()));
-            posIncrAtt.setPositionIncrement(skippedPositions + 1);
+            //词元增量
+            posIncrAtt.setPositionIncrement(lexeme.getIncrementStep());
             //记录分词的最后位置
             endPosition = lexeme.endPosition();
             return true;
@@ -50,8 +46,7 @@ public final class LcPinyinTokenizer extends Tokenizer {
     @Override
     public void reset() throws IOException {
         super.reset();
-        lcPinyinSegmenter.reset();
-        skippedPositions = 0;
+        getSegmenter().reset();
     }
 
     @Override
@@ -60,8 +55,6 @@ public final class LcPinyinTokenizer extends Tokenizer {
         // set final offset
         int finalOffset = correctOffset(endPosition);
         offsetAtt.setOffset(finalOffset, finalOffset);
-        posIncrAtt.setPositionIncrement(posIncrAtt.getPositionIncrement() + skippedPositions);
+        posIncrAtt.setPositionIncrement(posIncrAtt.getPositionIncrement());
     }
 }
-
-

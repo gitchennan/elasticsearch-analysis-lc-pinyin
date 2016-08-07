@@ -2,7 +2,8 @@ package org.elasticsearch.indices.analysis;
 
 import org.lc.core.AnalysisSetting;
 import org.lc.lucene.LcPinyinAnalyzer;
-import org.lc.lucene.LcPinyinTokenizer;
+import org.lc.lucene.LcPinyinIndexTokenizer;
+import org.lc.lucene.LcPinyinSearchTokenizer;
 import org.lc.lucene.WhitespaceFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
@@ -19,64 +20,46 @@ public class LcPinyinIndicesAnalysis extends AbstractComponent {
     public LcPinyinIndicesAnalysis(final Settings settings, IndicesAnalysisService indicesAnalysisService, Environment env) {
         super(settings);
 
-        final String analysisMode = settings.get("analysisMode", AnalysisSetting.full_pinyin);
+        indicesAnalysisService.analyzerProviderFactories().put("lc_index",
+                new PreBuiltAnalyzerProviderFactory("lc_index", AnalyzerScope.GLOBAL,
+                        new LcPinyinAnalyzer(AnalysisSetting.index)));
 
-        indicesAnalysisService.analyzerProviderFactories().put("lc",
-                new PreBuiltAnalyzerProviderFactory("lc", AnalyzerScope.GLOBAL,
-                        new LcPinyinAnalyzer(analysisMode)));
+        indicesAnalysisService.analyzerProviderFactories().put("lc_search",
+                new PreBuiltAnalyzerProviderFactory("lc_search", AnalyzerScope.GLOBAL,
+                        new LcPinyinAnalyzer(AnalysisSetting.search)));
 
-        indicesAnalysisService.analyzerProviderFactories().put("lc_pinyin",
-                new PreBuiltAnalyzerProviderFactory("lc_pinyin", AnalyzerScope.GLOBAL,
-                        new LcPinyinAnalyzer(AnalysisSetting.full_pinyin)));
 
-        indicesAnalysisService.analyzerProviderFactories().put("lc_first_letter",
-                new PreBuiltAnalyzerProviderFactory("lc_first_letter", AnalyzerScope.GLOBAL,
-                        new LcPinyinAnalyzer(AnalysisSetting.first_letter_only)));
-
-        indicesAnalysisService.tokenizerFactories().put("lc",
+        indicesAnalysisService.tokenizerFactories().put("lc_index",
                 new PreBuiltTokenizerFactoryFactory(new TokenizerFactory() {
                     @Override
                     public String name() {
-                        return "lc";
+                        return "lc_index";
                     }
 
                     @Override
                     public Tokenizer create(Reader reader) {
-                        return new LcPinyinTokenizer(analysisMode, reader);
+                        return new LcPinyinIndexTokenizer(reader);
                     }
                 }));
 
-        indicesAnalysisService.tokenizerFactories().put("lc_pinyin",
+        indicesAnalysisService.tokenizerFactories().put("lc_search",
                 new PreBuiltTokenizerFactoryFactory(new TokenizerFactory() {
                     @Override
                     public String name() {
-                        return "lc_pinyin";
+                        return "lc_search";
                     }
 
                     @Override
                     public Tokenizer create(Reader reader) {
-                        return new LcPinyinTokenizer(AnalysisSetting.full_pinyin, reader);
+                        return new LcPinyinSearchTokenizer(reader);
                     }
                 }));
 
-        indicesAnalysisService.tokenizerFactories().put("lc_first_letter",
-                new PreBuiltTokenizerFactoryFactory(new TokenizerFactory() {
-                    @Override
-                    public String name() {
-                        return "lc_first_letter";
-                    }
-
-                    @Override
-                    public Tokenizer create(Reader reader) {
-                        return new LcPinyinTokenizer(AnalysisSetting.first_letter_only, reader);
-                    }
-                }));
-
-        indicesAnalysisService.tokenFilterFactories().put("lc", new PreBuiltTokenFilterFactoryFactory(
+        indicesAnalysisService.tokenFilterFactories().put("lc_filter", new PreBuiltTokenFilterFactoryFactory(
                 new TokenFilterFactory() {
                     @Override
                     public String name() {
-                        return "lc";
+                        return "lc_filter";
                     }
 
                     @Override

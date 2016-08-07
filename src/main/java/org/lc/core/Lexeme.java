@@ -11,8 +11,10 @@ public class Lexeme {
     private String lexemeText;
     //词元类型
     private int lexemeType;
+    //当前次元距上一个距离(default=1)
+    private int incrementStep = 1;
 
-    public Lexeme(int offset, int length, int oriLength, int lexemeType, String lexemeText) {
+    public Lexeme(int offset, int length, int oriLength, int incrementStep, int lexemeType, String lexemeText) {
         this.offset = offset;
         if (length < 0 || oriLength < 0) {
             throw new IllegalArgumentException("length|oriLength < 0");
@@ -21,6 +23,15 @@ public class Lexeme {
         this.length = length;
         this.lexemeType = lexemeType;
         this.lexemeText = lexemeText;
+        this.incrementStep = incrementStep;
+    }
+
+    public int getIncrementStep() {
+        return incrementStep;
+    }
+
+    public void setIncrementStep(int incrementStep) {
+        this.incrementStep = incrementStep;
     }
 
     public int beginPosition() {

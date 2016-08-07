@@ -2,6 +2,7 @@ package org.lc.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
+import org.lc.core.AnalysisSetting;
 
 import java.io.Reader;
 
@@ -14,7 +15,12 @@ public class LcPinyinAnalyzer extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(String name, Reader reader) {
-        final Tokenizer tokenizer = new LcPinyinTokenizer(analysisMode, reader);
+        Tokenizer tokenizer = null;
+        if (AnalysisSetting.search.equals(analysisMode)) {
+            tokenizer = new LcPinyinSearchTokenizer(reader);
+        } else {
+            tokenizer = new LcPinyinIndexTokenizer(reader);
+        }
         return new TokenStreamComponents(tokenizer, new WhitespaceFilter(tokenizer));
     }
 }

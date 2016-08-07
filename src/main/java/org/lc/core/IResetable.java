@@ -1,5 +1,5 @@
 package org.lc.core;
 
-public interface Resetable {
+public interface IResetable {
     void reset();
 }

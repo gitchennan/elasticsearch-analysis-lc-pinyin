@@ -16,7 +16,7 @@ public class LcPinyinAnalyzerProvider extends AbstractIndexAnalyzerProvider<LcPi
     @Inject
     public LcPinyinAnalyzerProvider(Index index, IndexSettingsService indexSettingsService, Environment env, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettingsService.getSettings(), name, settings);
-        String analysisMode = settings.get(AnalysisSetting.analysisMode, AnalysisSetting.full_pinyin);
+        String analysisMode = settings.get(AnalysisSetting.analysisMode, AnalysisSetting.index);
         analyzer = new LcPinyinAnalyzer(analysisMode);
     }
 

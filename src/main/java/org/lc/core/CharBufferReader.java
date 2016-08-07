@@ -5,7 +5,7 @@ import org.apache.lucene.analysis.util.CharacterUtils;
 import java.io.IOException;
 import java.io.Reader;
 
-public class CharBufferReader implements Resetable{
+public class CharBufferReader implements IResetable {
     //字符窜reader
     private Reader input;
     //读取游标

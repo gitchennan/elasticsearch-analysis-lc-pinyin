@@ -10,9 +10,11 @@ import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombi
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
-public class LcPinyinSegmenter implements Resetable {
+public class LcPinyinIndexSegmenter implements ISegmenter {
     //当前处理偏移位(相对于全文)
     private int offset = 0;
     //字符串reader
@@ -29,14 +31,12 @@ public class LcPinyinSegmenter implements Resetable {
     private final HanyuPinyinOutputFormat format;
     //字符缓冲区大小
     private static final int CHAR_BUFFER_SIZE = 1024;
-    private String analysisMode;
 
-    public LcPinyinSegmenter(String analysisMode, Reader input) {
+    public LcPinyinIndexSegmenter(Reader input) {
         this.input = input;
         charBufferReader = new CharBufferReader(input, CHAR_BUFFER_SIZE);
         format = new HanyuPinyinOutputFormat();
         format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
-        this.analysisMode = analysisMode;
     }
 
     public void reset() {
@@ -75,49 +75,46 @@ public class LcPinyinSegmenter implements Resetable {
             lexemeBuilder.append(charBufferReader.read());
         }
         if (lexemeBuilder.length() > 0) {
-            return processTokenToLexeme(lexemeBuilder.toString(), analysisMode);
+            return processTokenToLexeme(lexemeBuilder.toString());
         }
         return null;
     }
 
-    public String[] convertChineseToPinyin(char ch, String analysisMode) {
+    public String[] convertChineseToPinyin(char ch) {
         String[] pinyinArray = new String[0];
         try {
             pinyinArray = PinyinHelper.toHanyuPinyinStringArray(ch, format);
-            HashSet<String> pinyinSet = new HashSet<String>();
+            LinkedHashSet<String> pinyinSet = new LinkedHashSet<String>();
             for (int idx = 0; idx < pinyinArray.length; idx++) {
-                if (AnalysisSetting.first_letter_only.equals(analysisMode)) {
-                    pinyinSet.add(String.valueOf(pinyinArray[idx].charAt(0)));
-                } else {
-                    pinyinSet.add(pinyinArray[idx]);
-                }
+                pinyinSet.add(pinyinArray[idx]);
+                pinyinSet.add(String.valueOf(pinyinArray[idx].charAt(0)));
             }
-            return pinyinSet.toArray(new String[pinyinSet.size()]);
+            pinyinArray = pinyinSet.toArray(new String[pinyinSet.size()]);
         } catch (BadHanyuPinyinOutputFormatCombination ex) {
             Logger.logger.error(ex.getMessage(), ex);
         }
         return pinyinArray;
     }
 
-    private Lexeme processTokenToLexeme(String token, String analysisMode) {
+    private Lexeme processTokenToLexeme(String token) {
         Lexeme lexeme = null;
         char ch = token.charAt(0);
         if (token.length() == 1 && CharacterUtil.isChinese(ch)) {
-            String[] pinyinArray = convertChineseToPinyin(ch, analysisMode);
+            String[] pinyinArray = convertChineseToPinyin(ch);
             if (pinyinArray.length <= 0) {
                 ++offset;
                 return null;
             }
 
-            lexeme = new Lexeme(offset, pinyinArray[0].length(), 1, CharacterUtil.CHAR_CHINESE, pinyinArray[0]);
-            for (int idx = 1; idx < pinyinArray.length; idx++) {
-                pinyinList.add(new Lexeme(offset, pinyinArray[1].length(), 1, CharacterUtil.CHAR_CHINESE, pinyinArray[idx]));
+            lexeme = new Lexeme(offset, 1, 1, 1, CharacterUtil.CHAR_CHINESE, String.valueOf(ch));
+            for (int idx = 0; idx < pinyinArray.length; idx++) {
+                pinyinList.add(new Lexeme(offset, pinyinArray[idx].length(), 1, 0, CharacterUtil.CHAR_CHINESE, pinyinArray[idx]));
             }
 
             ++offset;
         } else {
             int charType = CharacterUtil.identifyCharType(CharacterUtil.regularize(ch));
-            lexeme = new Lexeme(offset, token.length(), token.length(), charType, token);
+            lexeme = new Lexeme(offset, token.length(), token.length(), 1, charType, token);
             offset = offset + token.length();
         }
         return lexeme;
