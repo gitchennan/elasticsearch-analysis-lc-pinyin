@@ -18,27 +18,9 @@
         </license>
     </licenses>
 
-	<!--
-    <scm>
-        <connection>scm:git:git@github.com:medcl/elasticsearch-analysis-lc-pinyin.git</connection>
-        <developerConnection>scm:git:git@github.com:medcl/elasticsearch-analysis-lc-pinyin.git
-        </developerConnection>
-        <url>http://github.com/medcl/elasticsearch-analysis-lc-pinyin</url>
-    </scm>
-	
-	
-	
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
-    -->
-
     <properties>
         <elasticsearch.version>1.4.5</elasticsearch.version>
     </properties>
-
 	
     <repositories>
         <repository>

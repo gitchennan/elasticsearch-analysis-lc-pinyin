@@ -33,7 +33,7 @@ public class PinyinAnalysisTest extends TestCase {
     @Test
     public void testSearch() throws IOException {
         LcPinyinAnalyzer analyzer = new LcPinyinAnalyzer(AnalysisSetting.search);
-        TokenStream tokenStream = analyzer.tokenStream("lc", "中华重庆大学生188号ads");
+        TokenStream tokenStream = analyzer.tokenStream("lc", "中华重庆大学生188号");
         tokenStream.reset();
 
         while (tokenStream.incrementToken()) {

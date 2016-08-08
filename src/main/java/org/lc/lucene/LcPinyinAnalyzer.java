@@ -2,6 +2,7 @@ package org.lc.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.el.GreekLowerCaseFilter;
 import org.lc.core.AnalysisSetting;
 
 import java.io.Reader;
@@ -21,6 +22,6 @@ public class LcPinyinAnalyzer extends Analyzer {
         } else {
             tokenizer = new LcPinyinIndexTokenizer(reader);
         }
-        return new TokenStreamComponents(tokenizer, new WhitespaceFilter(tokenizer));
+        return new TokenStreamComponents(tokenizer, new GreekLowerCaseFilter(new WhitespaceFilter(tokenizer)));
     }
 }
