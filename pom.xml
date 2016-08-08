@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-analysis-lc-pinyin</artifactId>
-    <version>1.0.1</version>
+    <version>1.4.5</version>
     <packaging>jar</packaging>
     <description>Lc Pinyin Analysis for ElasticSearch</description>
     <inceptionYear>2016</inceptionYear>

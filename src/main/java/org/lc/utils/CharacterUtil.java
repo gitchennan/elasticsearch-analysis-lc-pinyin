@@ -76,4 +76,12 @@ public class CharacterUtil {
     public static boolean isChinese(char input) {
         return identifyCharType(regularize(input)) == CHAR_CHINESE;
     }
+
+    public static boolean isNumber(char input) {
+        return identifyCharType(regularize(input)) == CHAR_ARABIC;
+    }
+
+    public static boolean isLetter(char input) {
+        return identifyCharType(regularize(input)) == CHAR_ENGLISH;
+    }
 }

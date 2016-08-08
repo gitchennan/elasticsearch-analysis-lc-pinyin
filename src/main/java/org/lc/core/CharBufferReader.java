@@ -12,9 +12,12 @@ public class CharBufferReader implements IResetable {
     private int readCursor = 0;
     //字符读入缓冲
     private CharacterUtils.CharacterBuffer charBuffer;
+    //字符缓冲区大小
+    private int bufferSize;
 
     public CharBufferReader(Reader input, int bufferSize) {
         this.input = input;
+        this.bufferSize = bufferSize;
         charBuffer = CharacterUtils.newCharacterBuffer(bufferSize);
     }
 
@@ -48,6 +51,7 @@ public class CharBufferReader implements IResetable {
 
     public void reset() {
         readCursor = 0;
+        charBuffer = CharacterUtils.newCharacterBuffer(bufferSize);
     }
 
 }
