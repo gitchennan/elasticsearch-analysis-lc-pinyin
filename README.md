@@ -14,6 +14,8 @@ Install
 -------
 
 elasticsearch.yml 配置如下:
+
+<pre>
 index:
   analysis:
     analyzer:
@@ -26,6 +28,7 @@ index:
       lc_search:
          type: lc
          analysisMode: search
+</pre>
 
 lc_index: 这个分词器用于做索引时指定
 lc_search: 这个分词器用于查询时使用
