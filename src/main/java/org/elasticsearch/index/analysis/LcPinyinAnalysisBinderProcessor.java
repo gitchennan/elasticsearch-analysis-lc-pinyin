@@ -4,7 +4,7 @@ public class LcPinyinAnalysisBinderProcessor extends AnalysisModule.AnalysisBind
 
     @Override
     public void processTokenFilters(TokenFiltersBindings tokenFiltersBindings) {
-        tokenFiltersBindings.processTokenFilter("lc", WhitespaceTokenFilterFactory.class);
+
     }
 
     @Override

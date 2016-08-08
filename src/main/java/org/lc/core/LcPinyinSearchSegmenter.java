@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
     //反正匹配最大长度
@@ -23,12 +24,12 @@ public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
         if (CharacterUtil.isLetter(ch)) {
             List<String> pinyinList = segReverse(token, MAX_LENGTH);
             lexemeList.add(new Lexeme(getOffset(), token.length(), token.length(), 1, CharacterUtil.CHAR_ENGLISH, token));
-            if(pinyinList.size() > 1) {
+            if (pinyinList.size() > 1) {
                 int pinyinIdx = 0;
                 for (String pinyinItem : pinyinList) {
                     lexemeList.add(new Lexeme(getOffset(), pinyinItem.length(), pinyinItem.length(), Math.min(1, pinyinIdx), CharacterUtil.CHAR_ENGLISH, pinyinItem));
                     incrementOffset(pinyinItem.length());
-                    pinyinIdx ++;
+                    pinyinIdx++;
                 }
             }
             incrementOffset(token.length());
@@ -43,6 +44,7 @@ public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
     }
 
     public static List<String> segReverse(String text, int maxLength) {
+        text = text.toLowerCase(Locale.ENGLISH);
         List<String> result = new LinkedList<String>();
         PinyinDic dic = PinyinDic.getInstance();
         while (text.length() > 0) {

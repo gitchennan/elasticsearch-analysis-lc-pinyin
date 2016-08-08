@@ -54,19 +54,5 @@ public class LcPinyinIndicesAnalysis extends AbstractComponent {
                         return new LcPinyinSearchTokenizer(reader);
                     }
                 }));
-
-        indicesAnalysisService.tokenFilterFactories().put("lc_filter", new PreBuiltTokenFilterFactoryFactory(
-                new TokenFilterFactory() {
-                    @Override
-                    public String name() {
-                        return "lc_filter";
-                    }
-
-                    @Override
-                    public TokenStream create(TokenStream tokenStream) {
-                        return new WhitespaceFilter(tokenStream);
-                    }
-                }
-        ));
     }
 }

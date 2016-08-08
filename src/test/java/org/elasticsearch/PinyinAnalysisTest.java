@@ -17,7 +17,7 @@ public class PinyinAnalysisTest extends TestCase {
     @Test
     public void testTokenizer() throws IOException {
         LcPinyinAnalyzer analyzer = new LcPinyinAnalyzer(AnalysisSetting.index);
-        TokenStream tokenStream = analyzer.tokenStream("lc", "中华重庆大学生18");
+        TokenStream tokenStream = analyzer.tokenStream("lc", "基huige");
         tokenStream.reset();
 
         while (tokenStream.incrementToken()) {
