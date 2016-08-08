@@ -160,6 +160,9 @@ Result
 }
 ```
 
+
+```bash
+curl -XPOST http://localhost:9200/index/fulltext/_search  -d'
 {
   "query": {
     "match": {
@@ -186,8 +189,10 @@ Result
     }
   }
 }
+'
+```
 
-
+```json
 {
 	"took": 8,
 	"timed_out": false,
@@ -213,8 +218,10 @@ Result
 		}]
 	}
 }
+```
 
-
+```bash
+curl -XPOST http://localhost:9200/index/fulltext/_search  -d'
 {
   "query": {
     "match": {
@@ -241,7 +248,10 @@ Result
     }
   }
 }
+'
+```
 
+```json
 {
 	"took": 10,
 	"timed_out": false,
@@ -267,7 +277,11 @@ Result
 		}]
 	}
 }
+```
 
+
+```bash
+curl -XPOST http://localhost:9200/index/fulltext/_search  -d'
 {
   "query": {
     "match": {
@@ -294,7 +308,10 @@ Result
     }
   }
 }
+'
+```
 
+```json
 {
 	"took": 14,
 	"timed_out": false,
@@ -320,8 +337,11 @@ Result
 		}]
 	}
 }
+```
 
 
+```bash
+curl -XPOST http://localhost:9200/index/fulltext/_search  -d'
 {
   "query": {
     "match": {
@@ -348,7 +368,10 @@ Result
     }
   }
 }
+'
+```
 
+```json
 {
 	"took": 6,
 	"timed_out": false,
@@ -374,3 +397,4 @@ Result
 		}]
 	}
 }
+```
