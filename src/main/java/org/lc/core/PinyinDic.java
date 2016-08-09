@@ -40,6 +40,14 @@ public class PinyinDic {
         } catch (Exception ex) {
             Logger.logger.error("read pinyin dic error.", ex);
             throw new RuntimeException("read pinyin dic error.", ex);
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (Exception ex) {
+                //ignore ex
+            }
         }
     }
 
