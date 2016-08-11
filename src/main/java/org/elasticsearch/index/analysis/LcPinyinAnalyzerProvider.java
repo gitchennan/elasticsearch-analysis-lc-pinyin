@@ -9,6 +9,7 @@ import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.settings.IndexSettingsService;
 
+@Deprecated
 public class LcPinyinAnalyzerProvider extends AbstractIndexAnalyzerProvider<LcPinyinAnalyzer> {
 
     private final LcPinyinAnalyzer analyzer;

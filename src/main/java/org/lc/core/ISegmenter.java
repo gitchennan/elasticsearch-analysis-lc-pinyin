@@ -4,6 +4,4 @@ import java.io.IOException;
 
 public interface ISegmenter extends IResetable {
     Lexeme next() throws IOException;
-
-    void reset();
 }

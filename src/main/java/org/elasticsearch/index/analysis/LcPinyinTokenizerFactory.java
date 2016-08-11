@@ -9,8 +9,7 @@ import org.elasticsearch.index.Index;
 import org.elasticsearch.index.settings.IndexSettingsService;
 import org.lc.lucene.LcPinyinIndexTokenizer;
 
-import java.io.Reader;
-
+@Deprecated
 public class LcPinyinTokenizerFactory extends AbstractTokenizerFactory {
     @Inject
     public LcPinyinTokenizerFactory(Index index, IndexSettingsService indexSettingsService, Environment env, @Assisted String name, @Assisted Settings settings) {
@@ -18,7 +17,8 @@ public class LcPinyinTokenizerFactory extends AbstractTokenizerFactory {
     }
 
     @Override
-    public Tokenizer create(Reader reader) {
-        return new LcPinyinIndexTokenizer(reader);
+    public Tokenizer create() {
+        return new LcPinyinIndexTokenizer();
     }
+
 }

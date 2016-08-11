@@ -18,14 +18,14 @@ public class PinyinAnalysisTest extends TestCase {
     public void testTokenizer() throws IOException {
         LcPinyinAnalyzer analyzer = new LcPinyinAnalyzer(AnalysisSetting.index);
         TokenStream tokenStream = analyzer.tokenStream("lc", "基huige");
+
+        CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
+        OffsetAttribute offsetAttribute = tokenStream.getAttribute(OffsetAttribute.class);
+        PositionIncrementAttribute positionIncrementAttribute = tokenStream.getAttribute(PositionIncrementAttribute.class);
+
         tokenStream.reset();
-
         while (tokenStream.incrementToken()) {
-            CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
-            OffsetAttribute offsetAttribute = tokenStream.getAttribute(OffsetAttribute.class);
-            PositionIncrementAttribute positionIncrementAttribute = tokenStream.getAttribute(PositionIncrementAttribute.class);
             System.out.println(charTermAttribute.toString() + ":" + offsetAttribute.startOffset() + "," + offsetAttribute.endOffset() + ":" + positionIncrementAttribute.getPositionIncrement());
-
         }
         tokenStream.close();
     }
@@ -34,14 +34,13 @@ public class PinyinAnalysisTest extends TestCase {
     public void testSearch() throws IOException {
         LcPinyinAnalyzer analyzer = new LcPinyinAnalyzer(AnalysisSetting.search);
         TokenStream tokenStream = analyzer.tokenStream("lc", "重qing");
+
         tokenStream.reset();
-
+        CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
+        OffsetAttribute offsetAttribute = tokenStream.getAttribute(OffsetAttribute.class);
+        PositionIncrementAttribute positionIncrementAttribute = tokenStream.getAttribute(PositionIncrementAttribute.class);
         while (tokenStream.incrementToken()) {
-            CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
-            OffsetAttribute offsetAttribute = tokenStream.getAttribute(OffsetAttribute.class);
-            PositionIncrementAttribute positionIncrementAttribute = tokenStream.getAttribute(PositionIncrementAttribute.class);
             System.out.println(charTermAttribute.toString() + ":" + offsetAttribute.startOffset() + "," + offsetAttribute.endOffset() + ":" + positionIncrementAttribute.getPositionIncrement());
-
         }
         tokenStream.close();
     }

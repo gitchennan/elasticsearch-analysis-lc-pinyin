@@ -12,11 +12,9 @@ import java.io.IOException;
 import java.io.Reader;
 
 public final class LcPinyinIndexTokenizer extends AbstractLcPinyinTokenizer {
-    private final Reader input;
     private final LcPinyinIndexSegmenter indexSegmenter;
-    public LcPinyinIndexTokenizer(Reader input) {
-        super(input);
-        this.input = input;
+    public LcPinyinIndexTokenizer() {
+        super();
         this.indexSegmenter = new LcPinyinIndexSegmenter(input);
     }
 

@@ -1,7 +1,5 @@
 package org.lc.core;
 
-
-import org.elasticsearch.common.lang3.StringUtils;
 import org.lc.utils.Logger;
 import org.lc.utils.MemoryUsage;
 
@@ -30,7 +28,7 @@ public class PinyinDic {
             String line = null;
             long startPoint = System.currentTimeMillis();
             while (null != (line = reader.readLine())) {
-                if (StringUtils.isNotBlank(line)) {
+                if (line.trim().length() > 0) {
                     dicSet.add(line);
                 }
             }

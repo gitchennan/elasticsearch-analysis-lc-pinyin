@@ -5,8 +5,6 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.el.GreekLowerCaseFilter;
 import org.lc.core.AnalysisSetting;
 
-import java.io.Reader;
-
 public class LcPinyinAnalyzer extends Analyzer {
     private String analysisMode;
 
@@ -15,12 +13,12 @@ public class LcPinyinAnalyzer extends Analyzer {
     }
 
     @Override
-    protected TokenStreamComponents createComponents(String name, Reader reader) {
+    protected TokenStreamComponents createComponents(String name) {
         Tokenizer tokenizer = null;
         if (AnalysisSetting.search.equals(analysisMode)) {
-            tokenizer = new LcPinyinSearchTokenizer(reader);
+            tokenizer = new LcPinyinSearchTokenizer();
         } else {
-            tokenizer = new LcPinyinIndexTokenizer(reader);
+            tokenizer = new LcPinyinIndexTokenizer();
         }
         return new TokenStreamComponents(tokenizer, new GreekLowerCaseFilter(new WhitespaceFilter(tokenizer)));
     }

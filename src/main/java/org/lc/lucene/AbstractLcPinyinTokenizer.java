@@ -17,10 +17,6 @@ public abstract class AbstractLcPinyinTokenizer extends Tokenizer {
     private final OffsetAttribute offsetAtt = this.addAttribute(OffsetAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = this.addAttribute(PositionIncrementAttribute.class);
 
-    public AbstractLcPinyinTokenizer(Reader input) {
-        super(input);
-    }
-
     protected abstract ISegmenter getSegmenter();
 
     @Override
@@ -46,7 +42,7 @@ public abstract class AbstractLcPinyinTokenizer extends Tokenizer {
     @Override
     public void reset() throws IOException {
         super.reset();
-        getSegmenter().reset();
+        getSegmenter().reset(input);
     }
 
     @Override

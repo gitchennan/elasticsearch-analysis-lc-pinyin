@@ -22,7 +22,7 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
     //上一次处理的字符类型
     private int previousCharType = CharacterUtil.CHAR_USELESS;
     //字符串reader
-    private final Reader input;
+    private Reader input;
     //字符缓存
     private final CharBufferReader charBufferReader;
     //字符缓冲区大小
@@ -43,9 +43,10 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
     }
 
     @Override
-    public final void reset() {
+    public final void reset(Reader input) {
+        this.input = input;
         offset = 0;
-        charBufferReader.reset();
+        charBufferReader.reset(input);
         lexemeCache.clear();
         previousChar = null;
         previousCharType = CharacterUtil.CHAR_USELESS;

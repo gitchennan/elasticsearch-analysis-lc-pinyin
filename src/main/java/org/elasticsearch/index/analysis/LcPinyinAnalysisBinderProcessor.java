@@ -1,5 +1,6 @@
 package org.elasticsearch.index.analysis;
 
+@Deprecated
 public class LcPinyinAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProcessor {
 
     @Override
