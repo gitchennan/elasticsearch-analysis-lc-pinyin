@@ -29,7 +29,7 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
     protected final static int CHAR_BUFFER_SIZE = 1024;
     //拼音格式
     protected final HanyuPinyinOutputFormat format;
-    //多音字拼音
+    //词元缓存
     private final LinkedList<Lexeme> lexemeCache = new LinkedList<Lexeme>();
 
     protected abstract List<Lexeme> processTokenToLexeme(String token);
@@ -66,7 +66,7 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
      * @throws java.io.IOException
      */
     public final Lexeme next() throws IOException {
-        if (needContinueProcessLexeme()) {
+        if (hasMoreLexemeInCache()) {
             return nextCacheLexeme();
         }
         StringBuilder lexemeBuilder = new StringBuilder();
@@ -100,9 +100,12 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
     }
 
     protected String[] convertChineseToPinyin(char ch, boolean withFirstLetter) {
-        String[] pinyinArray = new String[0];
+        String[] pinyinArray = null;
         try {
             pinyinArray = PinyinHelper.toHanyuPinyinStringArray(ch, format);
+            if (pinyinArray == null) {
+                pinyinArray = new String[]{String.valueOf(ch)};
+            }
             LinkedHashSet<String> pinyinSet = new LinkedHashSet<String>();
             for (int idx = 0; idx < pinyinArray.length; idx++) {
                 pinyinSet.add(pinyinArray[idx]);
@@ -113,6 +116,7 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
             pinyinArray = pinyinSet.toArray(new String[pinyinSet.size()]);
         } catch (BadHanyuPinyinOutputFormatCombination ex) {
             Logger.logger.error(ex.getMessage(), ex);
+            pinyinArray = new String[]{String.valueOf(ch)};
         }
         return pinyinArray;
     }
@@ -129,7 +133,7 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
         return false;
     }
 
-    protected boolean needContinueProcessLexeme() {
+    protected boolean hasMoreLexemeInCache() {
         return !lexemeCache.isEmpty();
     }
 
