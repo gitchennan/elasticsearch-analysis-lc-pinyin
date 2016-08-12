@@ -8,7 +8,6 @@ import org.lc.core.ISegmenter;
 import org.lc.core.Lexeme;
 
 import java.io.IOException;
-import java.io.Reader;
 
 public abstract class AbstractLcPinyinTokenizer extends Tokenizer {
     //记录最后一个词元的结束位置
@@ -16,10 +15,6 @@ public abstract class AbstractLcPinyinTokenizer extends Tokenizer {
     private final CharTermAttribute termAtt = this.addAttribute(CharTermAttribute.class);
     private final OffsetAttribute offsetAtt = this.addAttribute(OffsetAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = this.addAttribute(PositionIncrementAttribute.class);
-
-    public AbstractLcPinyinTokenizer(Reader input) {
-        super(input);
-    }
 
     protected abstract ISegmenter getSegmenter();
 
@@ -46,7 +41,7 @@ public abstract class AbstractLcPinyinTokenizer extends Tokenizer {
     @Override
     public void reset() throws IOException {
         super.reset();
-        getSegmenter().reset();
+        getSegmenter().reset(input);
     }
 
     @Override

@@ -49,7 +49,8 @@ public class CharBufferReader implements IResetable {
         return charBuffer.getLength() > charBuffer.getOffset();
     }
 
-    public void reset() {
+    public void reset(Reader input) {
+        this.input = input;
         readCursor = 0;
         charBuffer = CharacterUtils.newCharacterBuffer(bufferSize);
     }
