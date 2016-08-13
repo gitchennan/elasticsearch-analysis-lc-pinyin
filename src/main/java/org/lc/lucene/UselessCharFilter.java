@@ -4,13 +4,14 @@ package org.lc.lucene;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.lc.utils.CharacterUtil;
 
 import java.io.IOException;
 
-public class WhitespaceFilter extends TokenFilter {
+public class UselessCharFilter extends TokenFilter {
     private CharTermAttribute termAtt = (CharTermAttribute) this.addAttribute(CharTermAttribute.class);
 
-    public WhitespaceFilter(TokenStream in) {
+    public UselessCharFilter(TokenStream in) {
         super(in);
     }
 
@@ -23,7 +24,8 @@ public class WhitespaceFilter extends TokenFilter {
             int curIdx = 0;
             char[] targetText = new char[termLength];
             for (int idx = 0; idx < termLength; idx++) {
-                if (text[idx] != ' ') {
+                int charType = CharacterUtil.identifyCharType(text[idx]);
+                if (charType != CharacterUtil.CHAR_USELESS) {
                     targetText[curIdx++] = text[idx];
                 }
             }
