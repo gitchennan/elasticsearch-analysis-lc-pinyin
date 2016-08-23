@@ -105,7 +105,7 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
         try {
             pinyinArray = PinyinHelper.toHanyuPinyinStringArray(ch, format);
             if (pinyinArray == null) {
-                pinyinArray = new String[]{String.valueOf(ch)};
+                return new String[0];
             }
             LinkedHashSet<String> pinyinSet = new LinkedHashSet<String>();
             for (int idx = 0; idx < pinyinArray.length; idx++) {

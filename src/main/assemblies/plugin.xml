@@ -23,16 +23,6 @@
                 <exclude>org.elasticsearch:elasticsearch</exclude>
             </excludes>
         </dependencySet>
-        <!--
-        <dependencySet>
-            <outputDirectory>/</outputDirectory>
-            <useProjectArtifact>true</useProjectArtifact>
-            <useTransitiveFiltering>true</useTransitiveFiltering>
-            <includes>
-                <include>org.apache.lucene:lucene-pinyin</include>
-            </includes>
-        </dependencySet>
-        -->
     </dependencySets>
    <fileSets>
         <fileSet>
