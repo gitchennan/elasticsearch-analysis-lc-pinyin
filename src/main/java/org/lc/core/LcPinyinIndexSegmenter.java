@@ -17,10 +17,6 @@ public class LcPinyinIndexSegmenter extends AbstractPinyinSegmenter {
         char ch = token.charAt(0);
         if (token.length() == 1 && CharacterUtil.isChinese(ch)) {
             String[] pinyinArray = convertChineseToPinyin(ch, true);
-            if (pinyinArray.length <= 0) {
-                incrementOffset(1);
-                return null;
-            }
 
             lexemeList.add(new Lexeme(getOffset(), 1, 1, 1, CharacterUtil.CHAR_CHINESE, String.valueOf(ch)));
             for (int idx = 0; idx < pinyinArray.length; idx++) {

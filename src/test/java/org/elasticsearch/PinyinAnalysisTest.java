@@ -17,15 +17,15 @@ public class PinyinAnalysisTest extends TestCase {
     @Test
     public void testTokenizer() throws IOException {
         LcPinyinAnalyzer analyzer = new LcPinyinAnalyzer(AnalysisSetting.index);
-        TokenStream tokenStream = analyzer.tokenStream("lc", "基huige");
+        TokenStream tokenStream = analyzer.tokenStream("lc", "重庆");
+
+        CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
+        OffsetAttribute offsetAttribute = tokenStream.getAttribute(OffsetAttribute.class);
+        PositionIncrementAttribute positionIncrementAttribute = tokenStream.getAttribute(PositionIncrementAttribute.class);
+
         tokenStream.reset();
-
         while (tokenStream.incrementToken()) {
-            CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
-            OffsetAttribute offsetAttribute = tokenStream.getAttribute(OffsetAttribute.class);
-            PositionIncrementAttribute positionIncrementAttribute = tokenStream.getAttribute(PositionIncrementAttribute.class);
             System.out.println(charTermAttribute.toString() + ":" + offsetAttribute.startOffset() + "," + offsetAttribute.endOffset() + ":" + positionIncrementAttribute.getPositionIncrement());
-
         }
         tokenStream.close();
     }
@@ -34,15 +34,24 @@ public class PinyinAnalysisTest extends TestCase {
     public void testSearch() throws IOException {
         LcPinyinAnalyzer analyzer = new LcPinyinAnalyzer(AnalysisSetting.search);
         TokenStream tokenStream = analyzer.tokenStream("lc", "重qing");
+
+        CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
+        OffsetAttribute offsetAttribute = tokenStream.getAttribute(OffsetAttribute.class);
+        PositionIncrementAttribute positionIncrementAttribute = tokenStream.getAttribute(PositionIncrementAttribute.class);
+
         tokenStream.reset();
+        Assert.assertTrue(tokenStream.incrementToken());
+        Assert.assertEquals(charTermAttribute.toString(), "重");
+        Assert.assertEquals(offsetAttribute.startOffset(), 0);
+        Assert.assertEquals(offsetAttribute.endOffset(), 1);
+        Assert.assertEquals(positionIncrementAttribute.getPositionIncrement(), 1);
 
-        while (tokenStream.incrementToken()) {
-            CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
-            OffsetAttribute offsetAttribute = tokenStream.getAttribute(OffsetAttribute.class);
-            PositionIncrementAttribute positionIncrementAttribute = tokenStream.getAttribute(PositionIncrementAttribute.class);
-            System.out.println(charTermAttribute.toString() + ":" + offsetAttribute.startOffset() + "," + offsetAttribute.endOffset() + ":" + positionIncrementAttribute.getPositionIncrement());
+        Assert.assertTrue(tokenStream.incrementToken());
+        Assert.assertEquals(charTermAttribute.toString(), "qing");
+        Assert.assertEquals(offsetAttribute.startOffset(), 1);
+        Assert.assertEquals(offsetAttribute.endOffset(), 5);
+        Assert.assertEquals(positionIncrementAttribute.getPositionIncrement(), 1);
 
-        }
         tokenStream.close();
     }
 

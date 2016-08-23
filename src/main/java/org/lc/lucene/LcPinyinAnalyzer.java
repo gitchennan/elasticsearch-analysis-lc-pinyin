@@ -7,6 +7,7 @@ import org.lc.core.AnalysisSetting;
 
 import java.io.Reader;
 
+
 public class LcPinyinAnalyzer extends Analyzer {
     private String analysisMode;
 
@@ -22,6 +23,6 @@ public class LcPinyinAnalyzer extends Analyzer {
         } else {
             tokenizer = new LcPinyinIndexTokenizer(reader);
         }
-        return new TokenStreamComponents(tokenizer, new GreekLowerCaseFilter(new WhitespaceFilter(tokenizer)));
+        return new TokenStreamComponents(tokenizer, new GreekLowerCaseFilter(new UselessCharFilter(tokenizer)));
     }
 }

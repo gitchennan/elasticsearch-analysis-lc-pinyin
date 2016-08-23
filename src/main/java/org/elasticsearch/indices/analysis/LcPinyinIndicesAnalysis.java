@@ -1,17 +1,18 @@
 package org.elasticsearch.indices.analysis;
 
-import org.lc.core.AnalysisSetting;
-import org.lc.lucene.LcPinyinAnalyzer;
-import org.lc.lucene.LcPinyinIndexTokenizer;
-import org.lc.lucene.LcPinyinSearchTokenizer;
-import org.lc.lucene.WhitespaceFilter;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.elasticsearch.common.component.AbstractComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
-import org.elasticsearch.index.analysis.*;
+import org.elasticsearch.index.analysis.AnalyzerScope;
+import org.elasticsearch.index.analysis.PreBuiltAnalyzerProviderFactory;
+import org.elasticsearch.index.analysis.PreBuiltTokenizerFactoryFactory;
+import org.elasticsearch.index.analysis.TokenizerFactory;
+import org.lc.core.AnalysisSetting;
+import org.lc.lucene.LcPinyinAnalyzer;
+import org.lc.lucene.LcPinyinIndexTokenizer;
+import org.lc.lucene.LcPinyinSearchTokenizer;
 
 import java.io.Reader;
 
