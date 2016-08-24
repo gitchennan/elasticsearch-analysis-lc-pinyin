@@ -1,7 +1,6 @@
 package org.lc.core;
 
 import org.lc.utils.Logger;
-import org.lc.utils.MemoryUsage;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -33,8 +32,7 @@ public class PinyinDic {
                 }
             }
             long endPoint = System.currentTimeMillis();
-            Logger.logger.info(String.format("Load pinyin from pinyin.dic, sizeof dic=[%s], takes %s ms, size=%s",
-                    MemoryUsage.humanSizeOf(dicSet), (endPoint - startPoint), dicSet.size()), this);
+            Logger.logger.info(String.format("Load pinyin from pinyin.dic, takes %s ms, size=%s", (endPoint - startPoint), dicSet.size()), this);
         } catch (Exception ex) {
             Logger.logger.error("read pinyin dic error.", ex);
             throw new RuntimeException("read pinyin dic error.", ex);
