@@ -6,14 +6,14 @@ Versions
 
 LC version | ES version
 -----------|-----------
-master | 1.4.5 -> master
+2.2.2 -> master | 2.2.2
 1.4.5 | 1.4.5
 
 
 Install
 -------
 
-elasticsearch.yml 配置如下:
+elasticsearch.yml 配置如下(ES2.0以上不需要下面配置):
 
 <pre>
 index:
