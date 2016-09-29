@@ -29,7 +29,6 @@ public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
                     incrementOffset(pinyinItem.length());
                 }
             }
-            incrementOffset(token.length());
         } else {
             //中文,数字,其他字符不做处理
             int charType = CharacterUtil.identifyCharType(CharacterUtil.regularize(ch));
