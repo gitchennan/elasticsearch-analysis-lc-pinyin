@@ -23,16 +23,12 @@ public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
         char ch = token.charAt(0);
         if (CharacterUtil.isLetter(ch)) {
             List<String> pinyinList = segReverse(token, MAX_LENGTH);
-            lexemeList.add(new Lexeme(getOffset(), token.length(), token.length(), 1, CharacterUtil.CHAR_ENGLISH, token));
-            if (pinyinList.size() > 1) {
-                int pinyinIdx = 0;
+            if (pinyinList.size() > 0) {
                 for (String pinyinItem : pinyinList) {
-                    lexemeList.add(new Lexeme(getOffset(), pinyinItem.length(), pinyinItem.length(), Math.min(1, pinyinIdx), CharacterUtil.CHAR_ENGLISH, pinyinItem));
+                    lexemeList.add(new Lexeme(getOffset(), pinyinItem.length(), pinyinItem.length(), 1, CharacterUtil.CHAR_ENGLISH, pinyinItem));
                     incrementOffset(pinyinItem.length());
-                    pinyinIdx++;
                 }
             }
-            incrementOffset(token.length());
         } else {
             //中文,数字,其他字符不做处理
             int charType = CharacterUtil.identifyCharType(CharacterUtil.regularize(ch));
