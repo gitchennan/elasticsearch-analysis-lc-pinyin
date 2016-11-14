@@ -8,10 +8,12 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.junit.Test;
 import org.lc.core.AnalysisSetting;
+import org.lc.core.DfsPinyinSeg;
 import org.lc.core.PinyinDic;
 import org.lc.lucene.LcPinyinAnalyzer;
 
 import java.io.IOException;
+import java.util.List;
 
 public class PinyinAnalysisTest extends TestCase {
     @Test
@@ -61,5 +63,27 @@ public class PinyinAnalysisTest extends TestCase {
         Assert.assertTrue(pinyinDic.getInstance().contains("chen"));
         Assert.assertTrue(pinyinDic.getInstance().contains("chen"));
         Assert.assertFalse(pinyinDic.getInstance().contains("abc"));
+    }
+
+    @Test
+    public void testDfsSeg() throws Exception {
+        String text = "xinyongA";
+        DfsPinyinSeg dfsPinyinSeg = new DfsPinyinSeg(text);
+        List<String> tokens = dfsPinyinSeg.segDeepSearch();
+
+        Assert.assertNotNull(tokens);
+        Assert.assertTrue(tokens.size() == 3);
+        Assert.assertEquals(tokens.get(0), "xin");
+        Assert.assertEquals(tokens.get(1), "yong");
+        Assert.assertEquals(tokens.get(2), "A");
+
+        text = "hongen";
+        dfsPinyinSeg = new DfsPinyinSeg(text);
+        tokens = dfsPinyinSeg.segDeepSearch();
+
+        Assert.assertNotNull(tokens);
+        Assert.assertTrue(tokens.size() == 2);
+        Assert.assertEquals(tokens.get(0), "hong");
+        Assert.assertEquals(tokens.get(1), "en");
     }
 }
