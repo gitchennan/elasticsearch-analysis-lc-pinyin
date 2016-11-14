@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
-    //反正匹配最大长度
-    public static final int MAX_LENGTH = 6;
 
     public LcPinyinSearchSegmenter(Reader input) {
         super(input);
@@ -22,7 +20,7 @@ public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
         List<Lexeme> lexemeList = new LinkedList<Lexeme>();
         char ch = token.charAt(0);
         if (CharacterUtil.isLetter(ch)) {
-            List<String> pinyinList = segReverse(token, MAX_LENGTH);
+            List<String> pinyinList = smartPinyinSeg(token);
             if (pinyinList.size() > 0) {
                 for (String pinyinItem : pinyinList) {
                     lexemeList.add(new Lexeme(getOffset(), pinyinItem.length(), pinyinItem.length(), 1, CharacterUtil.CHAR_ENGLISH, pinyinItem));
@@ -39,7 +37,26 @@ public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
         return lexemeList;
     }
 
-    public static List<String> segReverse(String text, int maxLength) {
+    /**
+     * 智能拼音拆分,剩下的单字母越少越好
+     * @param pinyinToken 待分词拼音串
+     * @return            分词后词条
+     */
+    private List<String> smartPinyinSeg(String pinyinToken) {
+        DfsPinyinSeg dfsPinyinSeg = new DfsPinyinSeg(pinyinToken);
+        return dfsPinyinSeg.segDeepSearch();
+    }
+
+
+    /**
+     * 反向最大匹配算法实现分词(不建议使用)
+     *
+     * @param text      待分词拼音串
+     * @param maxLength 最大词条长度
+     * @return          分词后词条
+     */
+    @Deprecated
+    public List<String> segReverse(String text, int maxLength) {
         text = text.toLowerCase(Locale.ENGLISH);
         List<String> result = new LinkedList<String>();
         PinyinDic dic = PinyinDic.getInstance();
