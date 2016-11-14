@@ -61,6 +61,13 @@ public class PinyinDic {
     }
 
     public boolean contains(String c) {
-        return dicSet.contains(c);
+        if (c == null) {
+            return false;
+        }
+        c = c.trim();
+        if (c.length() == 0) {
+            return false;
+        }
+        return dicSet.contains(c.toLowerCase());
     }
 }
