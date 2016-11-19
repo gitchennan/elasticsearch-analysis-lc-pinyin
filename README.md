@@ -285,5 +285,9 @@ QueryBuilder pinyinQueryBuilder =  QueryBuilders.matchPhraseQuery("name", "dzdp"
                 .addHighlightedField("name")
                 .execute().actionGet();
 ```
+作者:  [@陈楠][1]
+Email: 465360798@qq.com
 
 <完>
+
+[1]: http://blog.csdn.net/chennanymy?viewmode=contents
