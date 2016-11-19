@@ -1,403 +1,289 @@
-LC Analysis for Elasticsearch
-=============================
+LC Pinyin Analysis for Elasticsearch
+====================================
 
-Versions
---------
+Lc Pinyin版本
+-------------
 
 LC version | ES version
 -----------|-----------
 master | 1.4.5 -> master
 1.4.5 | 1.4.5
 
+Lc Pinyin介绍
+-------------
+> `elasticsearch-analysis-lc-pinyin`是一款`elasticsearch`拼音分词插件，可以支持按照全拼、首字母，中文混合搜索。
+例如我们在某宝搜索框中输入“jianpan” 可以搜索到关键字包含“键盘”的商品。不仅仅输入全拼，有时候我们输入首字母、拼音和首字母、中文和首字母的混合输入，比如：“键pan”、“j盘”、“jianp”、“jpan”、“jianp”、“jp”
+等等，都应该匹配到键盘。通过elasticsearch-analysis-lc-pinyin这个插件就能做到类似的搜索
 
-Install
--------
+> * 此拼音插件主要用在`短文档`的搜索上，如文章的标题、作者，商品的品牌等，不建议用在`长文档`中
 
-elasticsearch.yml 配置如下:
+分词器
+------
+> * `lc_index` : 该分词器用于索引数据时指定
+> * `lc_search`: 该分词器用于拼音搜索时指定，按最小拼音分词个人拆分拼音
+> * `lc_first_letter` : 该分词器用于首字母搜索，按照单字母拆分
 
-<pre>
-index:
-  analysis:
-    analyzer:
-      lc:
-         alias: [lc_analyzer]
-         type: org.elasticsearch.index.analysis.LcPinyinAnalyzerProvider
-      lc_index:
-         type: lc
-         analysisMode: index
-      lc_search:
-         type: lc
-         analysisMode: search
-</pre>
+------
 
-lc_index: 这个分词器用于做索引时指定
-lc_search: 这个分词器用于查询时使用
+## 使用示例
 
-
-#### Quick Example
-
-1.create a index
+1.创建一个索引`index`
 
 ```bash
 curl -XPUT http://localhost:9200/index
 ```
 
-2.create a mapping
+2.创建类型`brand`的mapping
 
 ```bash
-curl -XPOST http://localhost:9200/index/fulltext/_mapping -d'
+curl -XPOST http://localhost:9200/index/brand/_mapping -d'
 {
-    "fulltext": {
-             "_all": {
-            "index_analyzer": "lc_index",
-            "search_analyzer": "lc_search",
-            "term_vector": "no",
-            "store": "false"
-        },
-        "properties": {
-            "content": {
-                "type": "string",
-                "store": "no",
-                "term_vector": "with_positions_offsets",
-                "index_analyzer": "lc_index",
-                "search_analyzer": "lc_search",
-                "include_in_all": "true",
-                "boost": 8
-            }
-        }
+  "brand": {
+    "properties": {
+      "name": {
+        "type": "string",
+        "index_analyzer": "lc_index",
+        "search_analyzer": "lc_search",
+        "term_vector": "with_positions_offsets"
+      }
     }
+  }
 }'
 ```
 
-3.index some docs
+3.索引一些互联网公司的名字
 
 ```bash
-curl -XPOST http://localhost:9200/index/fulltext/1 -d'
-{"content":"美国留给伊拉克的是个烂摊子吗"}
-'
+curl -XPOST http://localhost:9200/index/brand/1 -d'{"name":"百度"}'
+curl -XPOST http://localhost:9200/index/brand/2 -d'{"name":"阿里巴巴"}'
+curl -XPOST http://localhost:9200/index/brand/3 -d'{"name":"腾讯"}'
+curl -XPOST http://localhost:9200/index/brand/4 -d'{"name":"网易"}'
+curl -XPOST http://localhost:9200/index/brand/5 -d'{"name":"饿了么"}'
+curl -XPOST http://localhost:9200/index/brand/6 -d'{"name":"百姓网"}'
+curl -XPOST http://localhost:9200/index/brand/7 -d'{"name":"滴滴打车"}'
+curl -XPOST http://localhost:9200/index/brand/8 -d'{"name":"百度糯米"}'
+curl -XPOST http://localhost:9200/index/brand/9 -d'{"name":"大众点评"}'
+curl -XPOST http://localhost:9200/index/brand/10 -d'{"name":"携程旅行网"}'
 ```
 
-```bash
-curl -XPOST http://localhost:9200/index/fulltext/2 -d'
-{"content":"公安部：各地校车将享最高路权"}
-'
-```
+4.编写高亮查询DSL
 
 ```bash
-curl -XPOST http://localhost:9200/index/fulltext/3 -d'
-{"content":"中韩渔警冲突调查：韩警平均每天扣1艘中国渔船"}
-'
-```
-
-```bash
-curl -XPOST http://localhost:9200/index/fulltext/4 -d'
-{"content":"中国驻洛杉矶领事馆遭亚裔男子枪击 嫌犯已自首"}
-'
-```
-
-4.query with highlighting
-
-```bash
-curl -XPOST http://localhost:9200/index/fulltext/_search  -d'
+# 此示例通过`lc_search`分词器配合`match_phrase`查询实现品牌的`全拼`搜索
+# 搜索全拼关键字`baidu`，请求DSL如下：
+curl -XPOST http://localhost:9200/index/brand/_search  -d'
 {
     "query": {
         "match": {
-          "content": {
-            "query": "中国",
+          "name": {
+            "query": "baidu",
             "analyzer": "lc_search",
-            "type": "phrase",
-            "slop": 1,
-            "zero_terms_query": "NONE"
+            "type": "phrase"
           }
         }
     },
     "highlight" : {
-        "pre_tags" : ["<tag1>", "<tag2>"],
-        "post_tags" : ["</tag1>", "</tag2>"],
+        "pre_tags" : ["<tag1>"],
+        "post_tags" : ["</tag1>"],
         "fields" : {
-            "content" : {}
+            "name" : {}
         }
     }
-}
-'
-```
-Result
+}'
 
-```json
+# 匹配到`百度`、`百度糯米`两个品牌
+# tip：`百度`排在`百度糯米`的前面，因为name字段长度更短
+#查询结果：
 {
-	"took": 8,
-	"timed_out": false,
-	"_shards": {
-		"total": 5,
-		"successful": 5,
-		"failed": 0
-	},
-	"hits": {
-		"total": 2,
-		"max_score": 0.92055845,
-		"hits": [{
-			"_index": "index",
-			"_type": "fulltext",
-			"_id": "4",
-			"_score": 0.92055845,
-			"_source": {
-				"content": "中国驻洛杉矶领事馆遭亚裔男子枪击 嫌犯已自首"
-			},
-			"highlight": {
-				"content": ["<tag1>中国</tag1>驻洛杉矶领事馆遭亚裔男子枪击 嫌犯已自首"]
-			}
-		},
-		{
-			"_index": "index",
-			"_type": "fulltext",
-			"_id": "3",
-			"_score": 0.92055845,
-			"_source": {
-				"content": "中韩渔警冲突调查：韩警平均每天扣1艘中国渔船"
-			},
-			"highlight": {
-				"content": ["中韩渔警冲突调查：韩警平均每天扣1艘<tag1>中国</tag1>渔船"]
-			}
-		}]
-	}
+    "took": 18,
+    "timed_out": false,
+    "_shards": {
+        "total": 1,
+        "successful": 1,
+        "failed": 0
+    },
+    "hits": {
+        "total": 2,
+        "max_score": 2.5751648,
+        "hits": [
+            {
+                "_index": "index",
+                "_type": "brand",
+                "_id": "1",
+                "_score": 2.5751648,
+                "_source": {
+                    "name": "百度"
+                },
+                "highlight": {
+                    "name": [
+                        "<tag1>百度</tag1>"
+                    ]
+                }
+            }
+            ,
+            {
+                "_index": "index",
+                "_type": "brand",
+                "_id": "8",
+                "_score": 2.0601318,
+                "_source": {
+                    "name": "百度糯米"
+                },
+                "highlight": {
+                    "name": [
+                        "<tag1>百度</tag1>糯米"
+                    ]
+                }
+            }
+        ]
+    }
 }
-```
 
+# 此示例通过`lc_search`分词器配合`match_phrase`查询实现品牌的`中文&全拼`搜索
+# 搜索全拼关键字`xie程lu行wang`，请求DSL如下：
+curl -XPOST http://localhost:9200/index/brand/_search  -d'
+{
+    "query": {
+        "match": {
+          "name": {
+            "query": "xie程lu行",
+            "analyzer": "lc_search",
+            "type": "phrase"
+          }
+        }
+    },
+    "highlight" : {
+        "pre_tags" : ["<tag1>"],
+        "post_tags" : ["</tag1>"],
+        "fields" : {
+            "name" : {}
+        }
+    }
+}'
+
+#匹配到`携程旅行网` 结果如下：
+{
+    "took": 4,
+    "timed_out": false,
+    "_shards": {
+        "total": 1,
+        "successful": 1,
+        "failed": 0
+    },
+    "hits": {
+        "total": 1,
+        "max_score": 4.5665164,
+        "hits": [
+            {
+                "_index": "index",
+                "_type": "brand",
+                "_id": "10",
+                "_score": 4.5665164,
+                "_source": {
+                    "name": "携程旅行网"
+                },
+                "highlight": {
+                    "name": [
+                        "<tag1>携程旅行</tag1>网"
+                    ]
+                }
+            }
+        ]
+    }
+}
+
+```
 
 ```bash
-curl -XPOST http://localhost:9200/index/fulltext/_search  -d'
+# 此示例通过`lc_search`分词器配合`match_phrase`查询实现品牌的`首字母`搜索
+# 此示例中也可以通过`lc_first_letter`分词器搜索，结果和`lc_search`一样
+#
+# 这两个分词器的主要区别:
+#     lc_first_letterl 会把所有输入的字母拆分成单字母用于首字母匹配
+#     lc_search        会优先把输入的字母串拆分成全拼,并找到一个最优拆分结果
+#
+# 搜索全拼关键字`albb`，请求DSL如下：
+curl -XPOST http://localhost:9200/index/brand/_search  -d'
 {
-  "query": {
-    "match": {
-      "content": {
-        "query": "lsj",
-        "analyzer": "lc_search",
-        "type": "phrase",
-        "slop": 1,
-        "zero_terms_query": "NONE"
-      }
+    "query": {
+        "match": {
+          "name": {
+            "query": "albb",
+            "analyzer": "lc_search",
+            "type": "phrase"
+          }
+        }
+    },
+    "highlight" : {
+        "pre_tags" : ["<tag1>"],
+        "post_tags" : ["</tag1>"],
+        "fields" : {
+            "name" : {}
+        }
     }
-  },
-  "highlight": {
-    "pre_tags": [
-      "<tag1>",
-      "<tag2>"
-    ],
-    "post_tags": [
-      "</tag1>",
-      "</tag2>"
-    ],
-    "fields": {
-      "content": {}
-    }
-  }
-}
-'
-```
+}'
 
-```json
+#匹配到`阿里巴巴`，结果如下：
 {
-	"took": 8,
-	"timed_out": false,
-	"_shards": {
-		"total": 5,
-		"successful": 5,
-		"failed": 0
-	},
-	"hits": {
-		"total": 1,
-		"max_score": 2.8808377,
-		"hits": [{
-			"_index": "index",
-			"_type": "fulltext",
-			"_id": "4",
-			"_score": 2.8808377,
-			"_source": {
-				"content": "中国驻洛杉矶领事馆遭亚裔男子枪击 嫌犯已自首"
-			},
-			"highlight": {
-				"content": ["中国驻<tag2>洛杉矶</tag2>领事馆遭亚裔男子枪击 嫌犯已自首"]
-			}
-		}]
-	}
-}
-```
-
-```bash
-curl -XPOST http://localhost:9200/index/fulltext/_search  -d'
-{
-  "query": {
-    "match": {
-      "content": {
-        "query": "luoshanji",
-        "analyzer": "lc_search",
-        "type": "phrase",
-        "slop": 1,
-        "zero_terms_query": "NONE"
-      }
+    "took": 4,
+    "timed_out": false,
+    "_shards": {
+        "total": 1,
+        "successful": 1,
+        "failed": 0
+    },
+    "hits": {
+        "total": 1,
+        "max_score": 3.9560113,
+        "hits": [
+            {
+                "_index": "index",
+                "_type": "brand",
+                "_id": "2",
+                "_score": 3.9560113,
+                "_source": {
+                    "name": "阿里巴巴"
+                },
+                "highlight": {
+                    "name": [
+                        "<tag1>阿里巴巴</tag1>"
+                    ]
+                }
+            }
+        ]
     }
-  },
-  "highlight": {
-    "pre_tags": [
-      "<tag1>",
-      "<tag2>"
-    ],
-    "post_tags": [
-      "</tag1>",
-      "</tag2>"
-    ],
-    "fields": {
-      "content": {}
-    }
-  }
-}
-'
-```
-
-```json
-{
-	"took": 10,
-	"timed_out": false,
-	"_shards": {
-		"total": 5,
-		"successful": 5,
-		"failed": 0
-	},
-	"hits": {
-		"total": 1,
-		"max_score": 2.8808377,
-		"hits": [{
-			"_index": "index",
-			"_type": "fulltext",
-			"_id": "4",
-			"_score": 2.8808377,
-			"_source": {
-				"content": "中国驻洛杉矶领事馆遭亚裔男子枪击 嫌犯已自首"
-			},
-			"highlight": {
-				"content": ["中国驻<tag2>洛杉矶</tag2>领事馆遭亚裔男子枪击 嫌犯已自首"]
-			}
-		}]
-	}
 }
 ```
 
-
-```bash
-curl -XPOST http://localhost:9200/index/fulltext/_search  -d'
-{
-  "query": {
-    "match": {
-      "content": {
-        "query": "领shig",
-        "analyzer": "lc_search",
-        "type": "phrase",
-        "slop": 1,
-        "zero_terms_query": "NONE"
-      }
-    }
-  },
-  "highlight": {
-    "pre_tags": [
-      "<tag1>",
-      "<tag2>"
-    ],
-    "post_tags": [
-      "</tag1>",
-      "</tag2>"
-    ],
-    "fields": {
-      "content": {}
-    }
-  }
-}
-'
+```java
+//java api实现
+//该查询会匹配`阿里巴巴`这条数据
+QueryBuilder pinyinQueryBuilder =  QueryBuilders.matchPhraseQuery("name", "ali巴b").analyzer("lc_search");
+        SearchRequestBuilder requestBuilder = client.prepareSearch("index").setTypes("brand");
+        requestBuilder.setQuery(pinyinQueryBuilder)
+                .setHighlighterPreTags("<tag1>")
+                .setHighlighterPostTags("</tag1>")
+                .addHighlightedField("name")
+                .execute().actionGet();
+                
+                
+//该查询会匹配`大众点评`这条数据
+QueryBuilder pinyinQueryBuilder =  QueryBuilders.matchPhraseQuery("name", "dzdp").analyzer("lc_first_letter");
+        SearchRequestBuilder requestBuilder = client.prepareSearch("index").setTypes("brand");
+        requestBuilder.setQuery(pinyinQueryBuilder)
+                .setHighlighterPreTags("<tag1>")
+                .setHighlighterPostTags("</tag1>")
+                .addHighlightedField("name")
+                .execute().actionGet();
+                
+//该查询也会匹配`大众点评`这条数据
+QueryBuilder pinyinQueryBuilder =  QueryBuilders.matchPhraseQuery("name", "dzdp").analyzer("lc_search");
+        SearchRequestBuilder requestBuilder = client.prepareSearch("index").setTypes("brand");
+        requestBuilder.setQuery(pinyinQueryBuilder)
+                .setHighlighterPreTags("<tag1>")
+                .setHighlighterPostTags("</tag1>")
+                .addHighlightedField("name")
+                .execute().actionGet();
 ```
 
-```json
-{
-	"took": 14,
-	"timed_out": false,
-	"_shards": {
-		"total": 5,
-		"successful": 5,
-		"failed": 0
-	},
-	"hits": {
-		"total": 1,
-		"max_score": 2.8808377,
-		"hits": [{
-			"_index": "index",
-			"_type": "fulltext",
-			"_id": "4",
-			"_score": 2.8808377,
-			"_source": {
-				"content": "中国驻洛杉矶领事馆遭亚裔男子枪击 嫌犯已自首"
-			},
-			"highlight": {
-				"content": ["中国驻洛杉矶<tag2>领事馆</tag2>遭亚裔男子枪击 嫌犯已自首"]
-			}
-		}]
-	}
-}
-```
-
-
-```bash
-curl -XPOST http://localhost:9200/index/fulltext/_search  -d'
-{
-  "query": {
-    "match": {
-      "content": {
-        "query": "男zi枪j",
-        "analyzer": "lc_search",
-        "type": "phrase",
-        "slop": 1,
-        "zero_terms_query": "NONE"
-      }
-    }
-  },
-  "highlight": {
-    "pre_tags": [
-      "<tag1>",
-      "<tag2>"
-    ],
-    "post_tags": [
-      "</tag1>",
-      "</tag2>"
-    ],
-    "fields": {
-      "content": {}
-    }
-  }
-}
-'
-```
-
-```json
-{
-	"took": 6,
-	"timed_out": false,
-	"_shards": {
-		"total": 5,
-		"successful": 5,
-		"failed": 0
-	},
-	"hits": {
-		"total": 1,
-		"max_score": 1.8411169,
-		"hits": [{
-			"_index": "index",
-			"_type": "fulltext",
-			"_id": "4",
-			"_score": 1.8411169,
-			"_source": {
-				"content": "中国驻洛杉矶领事馆遭亚裔男子枪击 嫌犯已自首"
-			},
-			"highlight": {
-				"content": ["中国驻洛杉矶领事馆遭亚裔<tag1>男子枪击</tag1> 嫌犯已自首"]
-			}
-		}]
-	}
-}
-```
+<完>
