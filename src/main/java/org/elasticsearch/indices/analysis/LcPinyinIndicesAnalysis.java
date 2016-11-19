@@ -10,6 +10,7 @@ import org.elasticsearch.index.analysis.PreBuiltAnalyzerProviderFactory;
 import org.elasticsearch.index.analysis.PreBuiltTokenizerFactoryFactory;
 import org.elasticsearch.index.analysis.TokenizerFactory;
 import org.lc.core.AnalysisSetting;
+import org.lc.lucene.LcFirstLetterTokenizer;
 import org.lc.lucene.LcPinyinAnalyzer;
 import org.lc.lucene.LcPinyinIndexTokenizer;
 import org.lc.lucene.LcPinyinSearchTokenizer;
@@ -26,6 +27,10 @@ public class LcPinyinIndicesAnalysis extends AbstractComponent {
         indicesAnalysisService.analyzerProviderFactories().put("lc_search",
                 new PreBuiltAnalyzerProviderFactory("lc_search", AnalyzerScope.GLOBAL,
                         new LcPinyinAnalyzer(AnalysisSetting.search)));
+
+        indicesAnalysisService.analyzerProviderFactories().put("lc_first_letter",
+                new PreBuiltAnalyzerProviderFactory("lc_first_letter", AnalyzerScope.GLOBAL,
+                        new LcPinyinAnalyzer(AnalysisSetting.first_letter)));
 
 
         indicesAnalysisService.tokenizerFactories().put("lc_index",
@@ -51,6 +56,19 @@ public class LcPinyinIndicesAnalysis extends AbstractComponent {
                     @Override
                     public Tokenizer create() {
                         return new LcPinyinSearchTokenizer();
+                    }
+                }));
+
+        indicesAnalysisService.tokenizerFactories().put("lc_first_letter",
+                new PreBuiltTokenizerFactoryFactory(new TokenizerFactory() {
+                    @Override
+                    public String name() {
+                        return "lc_first_letter";
+                    }
+
+                    @Override
+                    public Tokenizer create() {
+                        return new LcFirstLetterTokenizer();
                     }
                 }));
     }
