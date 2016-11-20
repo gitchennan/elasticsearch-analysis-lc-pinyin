@@ -6,9 +6,10 @@ Lc Pinyin版本
 
 LC version | ES version
 -----------|-----------
-master | 2.2.2 -> master
-2.2.2 | 2.2.2
-1.4.5 | 1.4.5
+master | 5.0.1 -> master
+5.0.1.1 | 5.0.1
+2.2.2.1 | 2.2.2
+1.4.5.1 | 1.4.5
 
 Lc Pinyin介绍
 -------------
@@ -37,12 +38,12 @@ curl -XPUT http://localhost:9200/index
 2.创建类型`brand`的mapping
 
 ```bash
-curl -XPOST http://localhost:9200/index/brand/_mapping -d'
+curl -XPOST http://localhost:9200/index/_mapping/brand -d'
 {
   "brand": {
     "properties": {
       "name": {
-        "type": "string",
+        "type": "text",
         "analyzer": "lc_index",
         "search_analyzer": "lc_search",
         "term_vector": "with_positions_offsets"

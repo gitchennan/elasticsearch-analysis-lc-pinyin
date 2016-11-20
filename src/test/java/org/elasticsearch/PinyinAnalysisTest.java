@@ -1,11 +1,12 @@
 package org.elasticsearch;
 
-import junit.framework.Assert;
+
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
+import org.junit.Assert;
 import org.junit.Test;
 import org.lc.core.AnalysisSetting;
 import org.lc.core.DfsPinyinSeg;
@@ -54,6 +55,19 @@ public class PinyinAnalysisTest extends TestCase {
         Assert.assertEquals(offsetAttribute.endOffset(), 5);
         Assert.assertEquals(positionIncrementAttribute.getPositionIncrement(), 1);
 
+        tokenStream.close();
+    }
+
+    @Test
+    public void testFirstLetterAnalysis() throws IOException {
+        LcPinyinAnalyzer analyzer = new LcPinyinAnalyzer(AnalysisSetting.first_letter);
+        TokenStream tokenStream = analyzer.tokenStream("lc", "hg");
+        CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
+        tokenStream.reset();
+        Assert.assertTrue(tokenStream.incrementToken());
+        Assert.assertEquals(charTermAttribute.toString(), "h");
+        Assert.assertTrue(tokenStream.incrementToken());
+        Assert.assertEquals(charTermAttribute.toString(), "g");
         tokenStream.close();
     }
 

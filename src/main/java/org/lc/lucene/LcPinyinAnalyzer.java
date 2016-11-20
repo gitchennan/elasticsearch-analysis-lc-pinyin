@@ -15,10 +15,12 @@ public class LcPinyinAnalyzer extends Analyzer {
     @Override
     protected TokenStreamComponents createComponents(String name) {
         Tokenizer tokenizer = null;
-        if (AnalysisSetting.search.equals(analysisMode)) {
-            tokenizer = new LcPinyinSearchTokenizer();
-        } else {
+        if (AnalysisSetting.first_letter.equals(analysisMode)) {
+            tokenizer = new LcFirstLetterTokenizer();
+        } else if (AnalysisSetting.index.equals(analysisMode)) {
             tokenizer = new LcPinyinIndexTokenizer();
+        } else {
+            tokenizer = new LcPinyinSearchTokenizer();
         }
         return new TokenStreamComponents(tokenizer, new GreekLowerCaseFilter(new UselessCharFilter(tokenizer)));
     }
