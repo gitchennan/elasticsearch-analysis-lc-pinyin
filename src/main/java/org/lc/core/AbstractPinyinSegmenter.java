@@ -4,8 +4,9 @@ import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+import org.apache.logging.log4j.Logger;
+import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.lc.utils.CharacterUtil;
-import org.lc.utils.Logger;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -31,6 +32,8 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
     protected final HanyuPinyinOutputFormat format;
     //词元缓存
     private final LinkedList<Lexeme> lexemeCache = new LinkedList<Lexeme>();
+
+    private static final Logger logger = ESLoggerFactory.getLogger(AbstractPinyinSegmenter.class.getName());
 
     protected abstract List<Lexeme> processTokenToLexeme(String token);
 
@@ -116,7 +119,7 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
             }
             pinyinArray = pinyinSet.toArray(new String[pinyinSet.size()]);
         } catch (BadHanyuPinyinOutputFormatCombination ex) {
-            Logger.logger.error(ex.getMessage(), ex);
+            logger.error(ex.getMessage(), ex);
             pinyinArray = new String[]{String.valueOf(ch)};
         }
         return pinyinArray;

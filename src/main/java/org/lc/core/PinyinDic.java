@@ -1,6 +1,7 @@
 package org.lc.core;
 
-import org.lc.utils.Logger;
+import org.apache.logging.log4j.Logger;
+import org.elasticsearch.common.logging.ESLoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -9,6 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PinyinDic {
+
+    private static final Logger logger = ESLoggerFactory.getLogger(PinyinDic.class.getName());
 
     public static final String dicLocation = "/pinyin.dic";
 
@@ -32,9 +35,9 @@ public class PinyinDic {
                 }
             }
             long endPoint = System.currentTimeMillis();
-            Logger.logger.info(String.format("Load pinyin from pinyin.dic, takes %s ms, size=%s", (endPoint - startPoint), dicSet.size()), this);
+            logger.info(String.format("Load pinyin from pinyin.dic, takes %s ms, size=%s", (endPoint - startPoint), dicSet.size()), this);
         } catch (Exception ex) {
-            Logger.logger.error("read pinyin dic error.", ex);
+            logger.error("read pinyin dic error.", ex);
             throw new RuntimeException("read pinyin dic error.", ex);
         } finally {
             try {

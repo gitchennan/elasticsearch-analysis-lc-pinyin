@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.elasticsearch</groupId>
     <artifactId>elasticsearch-analysis-lc-pinyin</artifactId>
-    <version>2.2.2</version>
+    <version>${elasticsearch.version}</version>
     <packaging>jar</packaging>
     <description>Lc Pinyin Analysis for ElasticSearch</description>
     <inceptionYear>2016</inceptionYear>
@@ -19,8 +19,8 @@
     </licenses>
 
     <properties>
-        <elasticsearch.version>2.2.2</elasticsearch.version>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <elasticsearch.version>5.0.1</elasticsearch.version>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <elasticsearch.assembly.descriptor>${project.basedir}/src/main/assemblies/plugin.xml</elasticsearch.assembly.descriptor>
         <elasticsearch.plugin.name>analysis-lc-pinyin</elasticsearch.plugin.name>
         <elasticsearch.plugin.classname>org.elasticsearch.plugin.analysis.lc.AnalysisLcPinyinPlugin</elasticsearch.plugin.classname>
@@ -62,10 +62,9 @@
         </dependency>
 
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
-            <scope>runtime</scope>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.3</version>
         </dependency>
 
         <dependency>
@@ -113,7 +112,7 @@
 		<dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -126,8 +125,8 @@
                 <version>2.3.2</version>
                 <configuration>
                     <encoding>utf-8</encoding>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>

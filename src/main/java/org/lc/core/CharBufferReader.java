@@ -1,6 +1,7 @@
 package org.lc.core;
 
-import org.apache.lucene.analysis.util.CharacterUtils;
+
+import org.apache.lucene.analysis.CharacterUtils;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -44,7 +45,7 @@ public class CharBufferReader implements IResetable {
 
 
     private boolean readToBuffer() throws IOException {
-        CharacterUtils.getInstance().fill(charBuffer, input);
+        CharacterUtils.fill(charBuffer, input);
         readCursor = charBuffer.getOffset();
         return charBuffer.getLength() > charBuffer.getOffset();
     }
