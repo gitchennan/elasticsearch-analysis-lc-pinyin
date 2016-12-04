@@ -1,17 +1,10 @@
 package org.lc.core;
 
-import net.sourceforge.pinyin4j.PinyinHelper;
-import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
-import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
-import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
-import org.apache.logging.log4j.Logger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.lc.utils.CharacterUtil;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,20 +21,14 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
     private final CharBufferReader charBufferReader;
     //字符缓冲区大小
     protected final static int CHAR_BUFFER_SIZE = 1024;
-    //拼音格式
-    protected final HanyuPinyinOutputFormat format;
     //词元缓存
     private final LinkedList<Lexeme> lexemeCache = new LinkedList<Lexeme>();
-
-    private static final Logger logger = ESLoggerFactory.getLogger(AbstractPinyinSegmenter.class.getName());
 
     protected abstract List<Lexeme> processTokenToLexeme(String token);
 
     public AbstractPinyinSegmenter(Reader input) {
         this.input = input;
         charBufferReader = new CharBufferReader(input, CHAR_BUFFER_SIZE);
-        format = new HanyuPinyinOutputFormat();
-        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
         offset = 0;
     }
 
@@ -101,28 +88,6 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
             }
         }
         return null;
-    }
-
-    protected String[] convertChineseToPinyin(char ch, boolean withFirstLetter) {
-        String[] pinyinArray = null;
-        try {
-            pinyinArray = PinyinHelper.toHanyuPinyinStringArray(ch, format);
-            if (pinyinArray == null) {
-                return new String[0];
-            }
-            LinkedHashSet<String> pinyinSet = new LinkedHashSet<String>();
-            for (int idx = 0; idx < pinyinArray.length; idx++) {
-                pinyinSet.add(pinyinArray[idx]);
-                if (withFirstLetter) {
-                    pinyinSet.add(String.valueOf(pinyinArray[idx].charAt(0)));
-                }
-            }
-            pinyinArray = pinyinSet.toArray(new String[pinyinSet.size()]);
-        } catch (BadHanyuPinyinOutputFormatCombination ex) {
-            logger.error(ex.getMessage(), ex);
-            pinyinArray = new String[]{String.valueOf(ch)};
-        }
-        return pinyinArray;
     }
 
     private boolean breakProcess(Character previousChar, int previousCharType, Character curChar) {

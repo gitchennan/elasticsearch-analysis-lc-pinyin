@@ -1,6 +1,7 @@
 package org.lc.core;
 
 import org.lc.utils.CharacterUtil;
+import org.lc.utils.PinyinHelper;
 
 import java.io.Reader;
 import java.util.LinkedList;
@@ -16,7 +17,7 @@ public class LcPinyinIndexSegmenter extends AbstractPinyinSegmenter {
         List<Lexeme> lexemeList = new LinkedList<Lexeme>();
         char ch = token.charAt(0);
         if (token.length() == 1 && CharacterUtil.isChinese(ch)) {
-            String[] pinyinArray = convertChineseToPinyin(ch, true);
+            String[] pinyinArray = PinyinHelper.convertChineseToPinyin(ch, true);
 
             lexemeList.add(new Lexeme(getOffset(), 1, 1, 1, CharacterUtil.CHAR_CHINESE, String.valueOf(ch)));
             for (int idx = 0; idx < pinyinArray.length; idx++) {

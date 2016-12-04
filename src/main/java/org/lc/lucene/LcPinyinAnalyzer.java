@@ -1,8 +1,8 @@
 package org.lc.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.el.GreekLowerCaseFilter;
 import org.lc.core.AnalysisSetting;
 
 public class LcPinyinAnalyzer extends Analyzer {
@@ -22,6 +22,6 @@ public class LcPinyinAnalyzer extends Analyzer {
         } else {
             tokenizer = new LcPinyinSearchTokenizer();
         }
-        return new TokenStreamComponents(tokenizer, new GreekLowerCaseFilter(new UselessCharFilter(tokenizer)));
+        return new TokenStreamComponents(tokenizer, new LowerCaseFilter(new UselessCharFilter(tokenizer)));
     }
 }
