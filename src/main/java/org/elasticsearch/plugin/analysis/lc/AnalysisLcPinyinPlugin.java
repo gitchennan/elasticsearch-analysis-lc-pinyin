@@ -1,6 +1,8 @@
 package org.elasticsearch.plugin.analysis.lc;
 
+import org.elasticsearch.analysis.LcAnalysisBinderProcessor;
 import org.elasticsearch.common.inject.Module;
+import org.elasticsearch.index.analysis.AnalysisModule;
 import org.elasticsearch.indices.analysis.LcPinyinIndicesAnalysisModule;
 import org.elasticsearch.plugins.Plugin;
 
@@ -24,5 +26,9 @@ public class AnalysisLcPinyinPlugin extends Plugin {
     @Override
     public Collection<Module> nodeModules() {
         return Collections.<Module>singletonList(new LcPinyinIndicesAnalysisModule());
+    }
+
+    public void onModule(AnalysisModule module) {
+        module.addProcessor(new LcAnalysisBinderProcessor());
     }
 }
