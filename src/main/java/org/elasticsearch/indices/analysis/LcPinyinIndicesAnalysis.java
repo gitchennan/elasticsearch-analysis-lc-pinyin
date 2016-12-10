@@ -1,19 +1,18 @@
 package org.elasticsearch.indices.analysis;
 
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.elasticsearch.common.component.AbstractComponent;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
-import org.elasticsearch.index.analysis.AnalyzerScope;
-import org.elasticsearch.index.analysis.PreBuiltAnalyzerProviderFactory;
-import org.elasticsearch.index.analysis.PreBuiltTokenizerFactoryFactory;
-import org.elasticsearch.index.analysis.TokenizerFactory;
+import org.elasticsearch.index.analysis.*;
 import org.lc.core.AnalysisSetting;
-import org.lc.lucene.LcFirstLetterTokenizer;
+import org.lc.core.PinyinFilterSetting;
 import org.lc.lucene.LcPinyinAnalyzer;
 import org.lc.lucene.LcPinyinIndexTokenizer;
 import org.lc.lucene.LcPinyinSearchTokenizer;
+import org.lc.lucene.LcPinyinTokenFilter;
 
 public class LcPinyinIndicesAnalysis extends AbstractComponent {
     @Inject
@@ -22,15 +21,11 @@ public class LcPinyinIndicesAnalysis extends AbstractComponent {
 
         indicesAnalysisService.analyzerProviderFactories().put("lc_index",
                 new PreBuiltAnalyzerProviderFactory("lc_index", AnalyzerScope.GLOBAL,
-                        new LcPinyinAnalyzer(AnalysisSetting.index)));
+                        new LcPinyinAnalyzer(AnalysisSetting.index, settings)));
 
         indicesAnalysisService.analyzerProviderFactories().put("lc_search",
                 new PreBuiltAnalyzerProviderFactory("lc_search", AnalyzerScope.GLOBAL,
-                        new LcPinyinAnalyzer(AnalysisSetting.search)));
-
-        indicesAnalysisService.analyzerProviderFactories().put("lc_first_letter",
-                new PreBuiltAnalyzerProviderFactory("lc_first_letter", AnalyzerScope.GLOBAL,
-                        new LcPinyinAnalyzer(AnalysisSetting.first_letter)));
+                        new LcPinyinAnalyzer(AnalysisSetting.search, settings)));
 
 
         indicesAnalysisService.tokenizerFactories().put("lc_index",
@@ -42,7 +37,8 @@ public class LcPinyinIndicesAnalysis extends AbstractComponent {
 
                     @Override
                     public Tokenizer create() {
-                        return new LcPinyinIndexTokenizer();
+                        int setting = AnalysisSetting.parseIndexAnalysisSettings(settings);
+                        return new LcPinyinIndexTokenizer(setting);
                     }
                 }));
 
@@ -55,21 +51,33 @@ public class LcPinyinIndicesAnalysis extends AbstractComponent {
 
                     @Override
                     public Tokenizer create() {
-                        return new LcPinyinSearchTokenizer();
+                        int setting = AnalysisSetting.parseSearchAnalysisSettings(settings);
+                        return new LcPinyinSearchTokenizer(setting);
                     }
                 }));
 
-        indicesAnalysisService.tokenizerFactories().put("lc_first_letter",
-                new PreBuiltTokenizerFactoryFactory(new TokenizerFactory() {
-                    @Override
-                    public String name() {
-                        return "lc_first_letter";
-                    }
+        indicesAnalysisService.tokenFilterFactories().put("lc_full_pinyin", new PreBuiltTokenFilterFactoryFactory(new TokenFilterFactory() {
+            @Override
+            public String name() {
+                return "lc_full_pinyin";
+            }
 
-                    @Override
-                    public Tokenizer create() {
-                        return new LcFirstLetterTokenizer();
-                    }
-                }));
+            @Override
+            public TokenStream create(TokenStream tokenStream) {
+                return new LcPinyinTokenFilter(tokenStream, PinyinFilterSetting.full_pinyin);
+            }
+        }));
+
+        indicesAnalysisService.tokenFilterFactories().put("lc_full_pinyin", new PreBuiltTokenFilterFactoryFactory(new TokenFilterFactory() {
+            @Override
+            public String name() {
+                return "lc_full_pinyin";
+            }
+
+            @Override
+            public TokenStream create(TokenStream tokenStream) {
+                return new LcPinyinTokenFilter(tokenStream, PinyinFilterSetting.first_letter);
+            }
+        }));
     }
 }
