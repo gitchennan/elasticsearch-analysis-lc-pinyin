@@ -24,7 +24,6 @@ public class AnalysisLcPinyinPlugin extends Plugin implements AnalysisPlugin {
 
         providerMap.put("lc_index", LcPinyinTokenizerFactory::getLcIndexTokenizerFactory);
         providerMap.put("lc_search", LcPinyinTokenizerFactory::getLcSmartPinyinTokenizerFactory);
-        providerMap.put("lc_first_letter", LcPinyinTokenizerFactory::getLcFirstLetterTokenizerFactory);
 
         return providerMap;
     }
@@ -36,7 +35,6 @@ public class AnalysisLcPinyinPlugin extends Plugin implements AnalysisPlugin {
 
         providerMap.put("lc_index", LcPinyinAnalyzerProvider::getIndexAnalyzerProvider);
         providerMap.put("lc_search", LcPinyinAnalyzerProvider::getSmartPinyinAnalyzerProvider);
-        providerMap.put("lc_first_letter", LcPinyinAnalyzerProvider::getFirstLetterAnalyzerProvider);
 
         return providerMap;
     }

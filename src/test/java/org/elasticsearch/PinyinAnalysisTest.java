@@ -18,8 +18,8 @@ import java.util.List;
 
 public class PinyinAnalysisTest extends TestCase {
     @Test
-    public void testTokenizer() throws IOException {
-        LcPinyinAnalyzer analyzer = new LcPinyinAnalyzer(AnalysisSetting.index);
+    public void testIndexTokenizer() throws IOException {
+        LcPinyinAnalyzer analyzer = new LcPinyinAnalyzer(AnalysisSetting.index, AnalysisSetting.IndexAnalysisSetting.full_pinyin | AnalysisSetting.IndexAnalysisSetting.first_letter);
         TokenStream tokenStream = analyzer.tokenStream("lc", "重庆");
 
         CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
@@ -27,9 +27,42 @@ public class PinyinAnalysisTest extends TestCase {
         PositionIncrementAttribute positionIncrementAttribute = tokenStream.getAttribute(PositionIncrementAttribute.class);
 
         tokenStream.reset();
-        while (tokenStream.incrementToken()) {
-            System.out.println(charTermAttribute.toString() + ":" + offsetAttribute.startOffset() + "," + offsetAttribute.endOffset() + ":" + positionIncrementAttribute.getPositionIncrement());
-        }
+        Assert.assertTrue(tokenStream.incrementToken());
+        Assert.assertEquals(charTermAttribute.toString(), "zhong");
+        Assert.assertEquals(offsetAttribute.startOffset(), 0);
+        Assert.assertEquals(offsetAttribute.endOffset(), 1);
+        Assert.assertEquals(positionIncrementAttribute.getPositionIncrement(), 1);
+
+        Assert.assertTrue(tokenStream.incrementToken());
+        Assert.assertEquals(charTermAttribute.toString(), "z");
+        Assert.assertEquals(offsetAttribute.startOffset(), 0);
+        Assert.assertEquals(offsetAttribute.endOffset(), 1);
+        Assert.assertEquals(positionIncrementAttribute.getPositionIncrement(), 0);
+
+        Assert.assertTrue(tokenStream.incrementToken());
+        Assert.assertEquals(charTermAttribute.toString(), "chong");
+        Assert.assertEquals(offsetAttribute.startOffset(), 0);
+        Assert.assertEquals(offsetAttribute.endOffset(), 1);
+        Assert.assertEquals(positionIncrementAttribute.getPositionIncrement(), 0);
+
+        Assert.assertTrue(tokenStream.incrementToken());
+        Assert.assertEquals(charTermAttribute.toString(), "c");
+        Assert.assertEquals(offsetAttribute.startOffset(), 0);
+        Assert.assertEquals(offsetAttribute.endOffset(), 1);
+        Assert.assertEquals(positionIncrementAttribute.getPositionIncrement(), 0);
+
+        Assert.assertTrue(tokenStream.incrementToken());
+        Assert.assertEquals(charTermAttribute.toString(), "qing");
+        Assert.assertEquals(offsetAttribute.startOffset(), 1);
+        Assert.assertEquals(offsetAttribute.endOffset(), 2);
+        Assert.assertEquals(positionIncrementAttribute.getPositionIncrement(), 1);
+
+        Assert.assertTrue(tokenStream.incrementToken());
+        Assert.assertEquals(charTermAttribute.toString(), "q");
+        Assert.assertEquals(offsetAttribute.startOffset(), 1);
+        Assert.assertEquals(offsetAttribute.endOffset(), 2);
+        Assert.assertEquals(positionIncrementAttribute.getPositionIncrement(), 0);
+
         tokenStream.close();
     }
 
@@ -60,7 +93,7 @@ public class PinyinAnalysisTest extends TestCase {
 
     @Test
     public void testFirstLetterAnalysis() throws IOException {
-        LcPinyinAnalyzer analyzer = new LcPinyinAnalyzer(AnalysisSetting.first_letter);
+        LcPinyinAnalyzer analyzer = new LcPinyinAnalyzer(AnalysisSetting.search, AnalysisSetting.SearchAnalysisSetting.single_letter);
         TokenStream tokenStream = analyzer.tokenStream("lc", "hg");
         CharTermAttribute charTermAttribute = tokenStream.getAttribute(CharTermAttribute.class);
         tokenStream.reset();
