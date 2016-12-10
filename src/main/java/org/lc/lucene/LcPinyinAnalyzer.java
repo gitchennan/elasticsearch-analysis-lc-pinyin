@@ -20,6 +20,7 @@ public class LcPinyinAnalyzer extends Analyzer {
 
     public LcPinyinAnalyzer(String analysisMode) {
         this.analysisMode = analysisMode;
+        this.analysisSetting = 0;
     }
 
     public LcPinyinAnalyzer(String analysisMode, int analysisSetting) {
