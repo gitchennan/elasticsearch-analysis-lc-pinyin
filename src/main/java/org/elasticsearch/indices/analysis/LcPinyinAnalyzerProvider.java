@@ -13,7 +13,7 @@ public class LcPinyinAnalyzerProvider extends AbstractIndexAnalyzerProvider<LcPi
 
     public LcPinyinAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings, String analysisMode) {
         super(indexSettings, name, settings);
-        analyzer = new LcPinyinAnalyzer(analysisMode);
+        analyzer = new LcPinyinAnalyzer(analysisMode, settings);
     }
 
     public static LcPinyinAnalyzerProvider getIndexAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings) {
@@ -23,12 +23,6 @@ public class LcPinyinAnalyzerProvider extends AbstractIndexAnalyzerProvider<LcPi
     public static LcPinyinAnalyzerProvider getSmartPinyinAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings) {
         return new LcPinyinAnalyzerProvider(indexSettings, env, name, settings, AnalysisSetting.search);
     }
-
-    public static LcPinyinAnalyzerProvider getFirstLetterAnalyzerProvider(IndexSettings indexSettings, Environment env, String name, Settings settings) {
-        return new LcPinyinAnalyzerProvider(indexSettings, env, name, settings, AnalysisSetting.first_letter);
-    }
-
-
 
     @Override
     public LcPinyinAnalyzer get() {

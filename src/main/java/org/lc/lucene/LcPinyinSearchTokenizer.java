@@ -6,9 +6,8 @@ import org.lc.core.LcPinyinSearchSegmenter;
 public class LcPinyinSearchTokenizer extends AbstractLcPinyinTokenizer {
     private final LcPinyinSearchSegmenter searchSegmenter;
 
-    public LcPinyinSearchTokenizer() {
-        super();
-        this.searchSegmenter = new LcPinyinSearchSegmenter(input);
+    public LcPinyinSearchTokenizer(int analysisSetting) {
+        this.searchSegmenter = new LcPinyinSearchSegmenter(input, analysisSetting);
     }
 
     @Override

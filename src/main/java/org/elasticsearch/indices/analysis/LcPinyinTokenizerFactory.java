@@ -6,7 +6,6 @@ import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.IndexSettings;
 import org.elasticsearch.index.analysis.AbstractTokenizerFactory;
 import org.lc.core.AnalysisSetting;
-import org.lc.lucene.LcFirstLetterTokenizer;
 import org.lc.lucene.LcPinyinIndexTokenizer;
 import org.lc.lucene.LcPinyinSearchTokenizer;
 
@@ -14,9 +13,12 @@ public class LcPinyinTokenizerFactory extends AbstractTokenizerFactory {
 
     private String analysisMode;
 
+    private Settings settings;
+
     public LcPinyinTokenizerFactory(IndexSettings indexSettings, Environment env, String name, Settings settings, String analysisMode) {
         super(indexSettings, name, settings);
         this.analysisMode = analysisMode;
+        this.settings = settings;
     }
 
     public static LcPinyinTokenizerFactory getLcIndexTokenizerFactory(IndexSettings indexSettings, Environment env, String name, Settings settings) {
@@ -27,18 +29,14 @@ public class LcPinyinTokenizerFactory extends AbstractTokenizerFactory {
         return new LcPinyinTokenizerFactory(indexSettings, env, name, settings, AnalysisSetting.search);
     }
 
-    public static LcPinyinTokenizerFactory getLcFirstLetterTokenizerFactory(IndexSettings indexSettings, Environment env, String name, Settings settings) {
-        return new LcPinyinTokenizerFactory(indexSettings, env, name, settings, AnalysisSetting.first_letter);
-    }
-
     @Override
     public Tokenizer create() {
         if (AnalysisSetting.index.equals(analysisMode)) {
-            return new LcPinyinIndexTokenizer();
-        } else if (AnalysisSetting.first_letter.equals(analysisMode)) {
-            return new LcFirstLetterTokenizer();
+            int setting = AnalysisSetting.parseIndexAnalysisSettings(settings);
+            return new LcPinyinIndexTokenizer(setting);
         } else {
-            return new LcPinyinSearchTokenizer();
+            int setting = AnalysisSetting.parseSearchAnalysisSettings(settings);
+            return new LcPinyinSearchTokenizer(setting);
         }
     }
 }
