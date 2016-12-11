@@ -7,9 +7,9 @@ public class LcAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProc
 
     @Override
     public void processTokenFilters(TokenFiltersBindings tokenFiltersBindings) {
-
+        tokenFiltersBindings.processTokenFilter("lc_full_pinyin", LcPinyinTokenFilterFactory.class);
+        tokenFiltersBindings.processTokenFilter("lc_first_letter", LcFirstLetterTokenFilterFactory.class);
     }
-
 
     @Override
     public void processAnalyzers(AnalyzersBindings analyzersBindings) {
@@ -17,10 +17,9 @@ public class LcAnalysisBinderProcessor extends AnalysisModule.AnalysisBinderProc
         analyzersBindings.processAnalyzer("lc_search", LcSearchAnalyzerProvider.class);
     }
 
-
     @Override
     public void processTokenizers(TokenizersBindings tokenizersBindings) {
         tokenizersBindings.processTokenizer("lc_index", LcIndexTokenizerFactory.class);
-        tokenizersBindings.processTokenizer("lc_search", LcIndexTokenizerFactory.class);
+        tokenizersBindings.processTokenizer("lc_search", LcSearchTokenizerFactory.class);
     }
 }

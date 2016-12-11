@@ -68,10 +68,10 @@ public class LcPinyinIndicesAnalysis extends AbstractComponent {
             }
         }));
 
-        indicesAnalysisService.tokenFilterFactories().put("lc_full_pinyin", new PreBuiltTokenFilterFactoryFactory(new TokenFilterFactory() {
+        indicesAnalysisService.tokenFilterFactories().put("lc_first_letter", new PreBuiltTokenFilterFactoryFactory(new TokenFilterFactory() {
             @Override
             public String name() {
-                return "lc_full_pinyin";
+                return "lc_first_letter";
             }
 
             @Override
