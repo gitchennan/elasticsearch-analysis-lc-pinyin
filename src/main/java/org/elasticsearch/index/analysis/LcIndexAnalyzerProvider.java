@@ -9,18 +9,18 @@ import org.elasticsearch.index.settings.IndexSettingsService;
 import org.lc.core.AnalysisSetting;
 import org.lc.lucene.LcPinyinAnalyzer;
 
-public class LcPinyinAnalyzerProvider extends AbstractIndexAnalyzerProvider<LcPinyinAnalyzer> {
+public class LcIndexAnalyzerProvider extends AbstractIndexAnalyzerProvider<LcPinyinAnalyzer> {
 
     private final LcPinyinAnalyzer analyzer;
 
     @Inject
-    public LcPinyinAnalyzerProvider(Index index, IndexSettingsService indexSettingsService, Environment env, @Assisted String name, @Assisted Settings settings) {
+    public LcIndexAnalyzerProvider(Index index, IndexSettingsService indexSettingsService, Environment env, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettingsService.getSettings(), name, settings);
-        String analysisMode = settings.get(AnalysisSetting.analysisMode, AnalysisSetting.index);
-        analyzer = new LcPinyinAnalyzer(analysisMode);
+        analyzer = new LcPinyinAnalyzer(AnalysisSetting.index, settings);
     }
 
+    @Override
     public LcPinyinAnalyzer get() {
-        return analyzer;
+        return this.analyzer;
     }
 }

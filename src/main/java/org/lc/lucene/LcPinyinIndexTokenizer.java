@@ -8,10 +8,11 @@ import java.io.Reader;
 public final class LcPinyinIndexTokenizer extends AbstractLcPinyinTokenizer {
     private final Reader input;
     private final LcPinyinIndexSegmenter indexSegmenter;
-    public LcPinyinIndexTokenizer(Reader input) {
+
+    public LcPinyinIndexTokenizer(Reader input, int analysisSetting) {
         super(input);
         this.input = input;
-        this.indexSegmenter = new LcPinyinIndexSegmenter(input);
+        this.indexSegmenter = new LcPinyinIndexSegmenter(input, analysisSetting);
     }
 
     @Override

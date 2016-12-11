@@ -1,18 +1,19 @@
 package org.lc.core;
 
 
+
 import org.lc.utils.CharacterUtil;
 
 import java.io.Reader;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
 
-    public LcPinyinSearchSegmenter(Reader input) {
+    private int analysisSetting;
+
+    public LcPinyinSearchSegmenter(Reader input, int analysisSetting) {
         super(input);
+        this.analysisSetting = analysisSetting;
     }
 
     @Override
@@ -20,7 +21,13 @@ public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
         List<Lexeme> lexemeList = new LinkedList<Lexeme>();
         char ch = token.charAt(0);
         if (CharacterUtil.isLetter(ch)) {
-            List<String> pinyinList = smartPinyinSeg(token);
+            List<String> pinyinList = null;
+            if(analysisSetting == AnalysisSetting.SearchAnalysisSetting.smart_pinyin) {
+                pinyinList = smartPinyinSeg(token);
+            } else {
+                pinyinList = singleChar(token);
+            }
+
             if (pinyinList.size() > 0) {
                 for (String pinyinItem : pinyinList) {
                     lexemeList.add(new Lexeme(getOffset(), pinyinItem.length(), pinyinItem.length(), 1, CharacterUtil.CHAR_ENGLISH, pinyinItem));
@@ -37,7 +44,6 @@ public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
         return lexemeList;
     }
 
-
     /**
      * 智能拼音拆分,剩下的单字母越少越好
      * @param pinyinToken 待分词拼音串
@@ -48,34 +54,19 @@ public class LcPinyinSearchSegmenter extends AbstractPinyinSegmenter {
         return dfsPinyinSeg.segDeepSearch();
     }
 
-
     /**
-     * 反向最大匹配算法实现分词(不建议使用)
-     *
-     * @param text      待分词拼音串
-     * @param maxLength 最大词条长度
-     * @return          分词后词条
+     * 单字符拆分拼音(适用于首字母搜索)
+     * @param token 待分词拼音串
+     * @return      分词后词条
      */
-    @Deprecated
-    public List<String> segReverse(String text, int maxLength) {
-        text = text.toLowerCase(Locale.ENGLISH);
-        List<String> result = new LinkedList<String>();
-        PinyinDic dic = PinyinDic.getInstance();
-        while (text.length() > 0) {
-            if (text.length() < maxLength) {
-                maxLength = text.length();
-            }
-            String tryWord = text.substring(text.length() - maxLength);
-            while (!dic.contains(tryWord)) {
-                if (tryWord.length() == 1) {
-                    break;
-                }
-                tryWord = tryWord.substring(1);
-            }
-            result.add(tryWord);
-            text = text.substring(0, text.length() - tryWord.length());
+    private List<String> singleChar(String token) {
+        if(token == null || token.trim().length() == 0) {
+            return Collections.emptyList();
         }
-        Collections.reverse(result);
-        return result;
+        List<String> charTokenList = new ArrayList<String>(token.length());
+        for (char ch : token.toCharArray()) {
+            charTokenList.add(String.valueOf(ch));
+        }
+        return charTokenList;
     }
 }

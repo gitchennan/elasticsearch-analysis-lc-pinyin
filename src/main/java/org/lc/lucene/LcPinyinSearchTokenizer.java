@@ -9,10 +9,10 @@ public class LcPinyinSearchTokenizer extends AbstractLcPinyinTokenizer {
     private final Reader input;
     private final LcPinyinSearchSegmenter searchSegmenter;
 
-    public LcPinyinSearchTokenizer(Reader input) {
+    public LcPinyinSearchTokenizer(Reader input, int analysisSetting) {
         super(input);
         this.input = input;
-        this.searchSegmenter = new LcPinyinSearchSegmenter(input);
+        this.searchSegmenter = new LcPinyinSearchSegmenter(input, analysisSetting);
     }
 
     @Override

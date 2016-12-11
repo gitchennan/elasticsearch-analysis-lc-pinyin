@@ -7,18 +7,24 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.env.Environment;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.index.settings.IndexSettingsService;
-import org.lc.lucene.LcPinyinIndexTokenizer;
+import org.lc.core.AnalysisSetting;
+import org.lc.lucene.LcPinyinSearchTokenizer;
 
 import java.io.Reader;
 
-public class LcPinyinTokenizerFactory extends AbstractTokenizerFactory {
+public class LcSearchTokenizerFactory extends AbstractTokenizerFactory {
+
+    private Settings settings;
+
     @Inject
-    public LcPinyinTokenizerFactory(Index index, IndexSettingsService indexSettingsService, Environment env, @Assisted String name, @Assisted Settings settings) {
+    public LcSearchTokenizerFactory(Index index, IndexSettingsService indexSettingsService, Environment env, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettingsService.getSettings(), name, settings);
+        this.settings = settings;
     }
 
     @Override
     public Tokenizer create(Reader reader) {
-        return new LcPinyinIndexTokenizer(reader);
+        int setting = AnalysisSetting.parseIndexAnalysisSettings(settings);
+        return new LcPinyinSearchTokenizer(reader, setting);
     }
 }
