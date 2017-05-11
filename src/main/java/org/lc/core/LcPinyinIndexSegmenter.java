@@ -36,6 +36,12 @@ public class LcPinyinIndexSegmenter extends AbstractPinyinSegmenter {
         } else {
             int charType = CharacterUtil.identifyCharType(CharacterUtil.regularize(ch));
             lexemeList.add(new Lexeme(getOffset(), token.length(), token.length(), 1, charType, token));
+            if (CharacterUtil.CHAR_ARABIC.equals(charType) || (CharacterUtil.CHAR_ENGLISH.equals(charType)) {
+                for (int idx = 0; idx < token.length(); idx++) {
+                    Lexeme tmpLexeme = new Lexeme(getOffset()+idx, 1, 1, 0, charType, token.charAt(idx) + "");
+                    lexemeList.add(tmpLexeme);
+                }
+            }
             incrementOffset(token.length());
         }
         return lexemeList;
