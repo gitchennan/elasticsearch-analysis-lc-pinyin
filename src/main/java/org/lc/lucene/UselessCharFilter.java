@@ -16,7 +16,7 @@ public class UselessCharFilter extends TokenFilter {
     }
 
     @Override
-    public boolean incrementToken() throws IOException {
+    public final boolean incrementToken() throws IOException {
         while (this.input.incrementToken()) {
             char[] text = this.termAtt.buffer();
             int termLength = this.termAtt.length();

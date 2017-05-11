@@ -19,7 +19,7 @@ public abstract class AbstractLcPinyinTokenizer extends Tokenizer {
     protected abstract ISegmenter getSegmenter();
 
     @Override
-    public boolean incrementToken() throws IOException {
+    public final boolean incrementToken() throws IOException {
         clearAttributes();
         Lexeme lexeme = getSegmenter().next();
         if (lexeme != null) {
