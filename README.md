@@ -6,7 +6,7 @@ Lc Pinyin版本
 
 LC version | ES version
 -----------|-----------
-master | 5.3.0 -> master
+master | 5.5.1 -> master
 5.3.0.1 | 5.3.0
 5.2.2.1 | 5.2.2
 5.2.0.1 | 5.2.0
@@ -402,6 +402,12 @@ QueryBuilder pinyinQueryBuilder =  QueryBuilders.matchPhraseQuery("name", "dzdp"
                 .addHighlightedField("name")
                 .execute().actionGet();
 ```
+
+------
+## 自动提示的例子
+以下是使用lc_index分析器结合edgeNgram TokenFilter实现自动提示的例子：
+* [例子](examples/suggest%20example.txt) 
+
 作者:  [@陈楠][1]
 Email: 465360798@qq.com
 

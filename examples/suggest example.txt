@@ -1,0 +1,188 @@
+﻿GET /_cat/indices
+
+DELETE /test_index
+
+PUT /test_index
+{
+  "settings" : {
+    "number_of_shards" : 1,
+    "number_of_replicas" : 0,
+    "analysis" : {
+      "analyzer" : {
+        "lc_index_ngram" : {
+          "tokenizer" : "lc_index",
+          "filter" : ["lowercase","my_edge_ngram_tokenizer"]
+        }
+      },
+      "filter" :{
+        "my_edge_ngram_tokenizer" : {
+          "type" : "edgeNGram",
+          "min_gram" : "1",
+          "max_gram" : "6",
+          "token_chars": ["letter", "digit"]
+        }
+      }
+    }
+  }
+}
+
+POST /test_index/_mapping/brand
+{
+  "brand": {
+    "properties": {
+      "name": {
+        "type": "text",
+        "analyzer": "lc_index_ngram",
+        "search_analyzer": "lc_search",
+        "term_vector": "with_positions_offsets"
+      }
+    }
+  }
+}
+
+POST /test_index/brand/11
+{"name":"刘德华"}
+
+POST /test_index/brand/12
+{"name":"刘斌"}
+
+POST /test_index/brand/13
+{"name":"张三"}
+
+POST /test_index/brand/14
+{"name":"李四"}
+
+POST /test_index/brand/15
+{"name":"刘德志"}
+
+POST /test_index/brand/16
+{"name":"CBD"}
+
+POST /test_index/brand/17
+{"name":"T2"}
+
+### # 中文搜索: 搜索的文字需要匹配到集合中所有名字的子集。
+### #   1、搜索“刘”，匹配到“刘德华”、“刘斌”、“刘德志”
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "刘","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+### #   2、搜索“刘德”，匹配到“刘德华”、“刘德志”
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "刘德","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+### #   3、搜索“德华”，匹配到“刘德华”
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "德华","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+
+### #拼音搜索：搜索的文字转换成拼音后，需要匹配到集合中所有名字转成拼音后的子集
+### #   1、搜索“liu”，匹配到“刘德华”、“刘斌”、“刘德志”
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "liu","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+### #   2、搜索“liude”，匹配到“刘德华”、“刘德志”
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "liude","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+### #   3、搜索“liudehua”或“ldh”，匹配到“刘德华”
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "liudehua","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "ldh","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+
+### #   4、搜索lidh liudh ldeh ldehu ldehua lideh liudeh liudhua 等等缺一两个拼音字母的，也可以匹配到“刘德华”
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "lidh","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "liudh","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "ldeh","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "ldehu","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "ldehua","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "lideh","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "liudeh","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "liudhu","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "liudhua","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "lidehua","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+### #   4、搜索l ld d dh h li liu de hu hua 等等缺一两个拼音字母的单字，也可以匹配到“刘德华”
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "l","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "ld","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "d","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "dh","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "h","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "li","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "liu","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "de","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "hu","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "hua","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+### # 5、搜索c cb cbd bd
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "c","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "cb","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "cbd","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+POST /test_index/brand/_search?pretty
+{"query": {"match_phrase": {"name": {"query": "bd","analyzer": "lc_search"}}},"highlight" : {"pre_tags" : ["<tag1>"],"post_tags" : ["</tag1>"],"fields" : {"name" : {}}}}
+
+
+
+GET /test_index/brand/16
+
+GET /test_index/_analyze
+{"text" : "T2","analyzer": "lc_index"}
+GET /test_index/_analyze
+{"text" : "CBD","analyzer": "lc_index_ngram"}
+GET /test_index/_analyze
+{"text" : "cbd","analyzer": "lc_search"}
+
+GET /test_index/_analyze
+{"text" : "T2","tokenizer": "lc_index"}
+GET /test_index/_analyze
+{"text" : "T2","analyzer": "lc_index_ngram"}
+GET /test_index/_analyze
+{"text" : "t2","analyzer": "lc_search"}
+

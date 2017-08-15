@@ -27,7 +27,7 @@ public class LcPinyinTokenFilter extends TokenFilter {
     }
 
     @Override
-    public boolean incrementToken() throws IOException {
+    public final boolean incrementToken() throws IOException {
         if (hasMoreTokenInCache()) {
             this.termAtt.setEmpty();
             this.termAtt.append(nextTokenLexeme());
