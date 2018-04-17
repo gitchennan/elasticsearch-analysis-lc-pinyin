@@ -7,6 +7,7 @@ Lc Pinyin版本
 LC version | ES version
 -----------|-----------
 master | 5.3.0 -> master
+6.2.x | 6.1.0-6.2.3
 5.3.0.1 | 5.3.0
 5.2.2.1 | 5.2.2
 5.2.0.1 | 5.2.0
@@ -27,6 +28,14 @@ Lc Pinyin介绍
 等等，都应该匹配到键盘。通过elasticsearch-analysis-lc-pinyin这个插件就能做到类似的搜索
 
 > * 此拼音插件主要用在`短文档`的搜索上，如文章的标题、作者，商品的品牌等，不建议用在`长文档`中
+
+使用方法
+------
+
+1. 下载源码，选择对应版本
+2. 用maven本地执行 mvn clean package打包
+3. 拷贝release目录下的zip文件到es pugin目录解压
+4. 重启es
 
 分析器 - Analyzer
 ------
