@@ -48,4 +48,6 @@ public class LcPinyinAnalyzer extends Analyzer {
         }
         return new TokenStreamComponents(tokenizer, new LowerCaseFilter(new UselessCharFilter(tokenizer)));
     }
+    
+    
 }

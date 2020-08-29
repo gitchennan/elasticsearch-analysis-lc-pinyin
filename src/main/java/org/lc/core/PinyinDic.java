@@ -1,7 +1,7 @@
 package org.lc.core;
 
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
+import org.elasticsearch.common.logging.Loggers;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class PinyinDic {
 
-    private static final Logger logger = ESLoggerFactory.getLogger(PinyinDic.class.getName());
+    private static final Logger logger = Loggers.getLogger(PinyinDic.class,PinyinDic.class.getName());
 
     public static final String dicLocation = "/pinyin.dic";
 

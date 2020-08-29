@@ -2,6 +2,9 @@ package org.lc.core;
 
 import org.elasticsearch.common.settings.Settings;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class AnalysisSetting {
     public static final String analysisMode = "mode";
     public static final String index = "index";
@@ -28,7 +31,7 @@ public class AnalysisSetting {
         int settingCode = 0;
         if(settings != null) {
             String[] defaultSetting = new String[]{"chinese_char", "first_letter", "full_pinyin"};
-            String[] indexAnalysisSetting = settings.getAsArray(analysisMode, defaultSetting);
+            List<String> indexAnalysisSetting = settings.getAsList(analysisMode, Arrays.asList(defaultSetting));
             for (String settingItem : indexAnalysisSetting) {
                 if ("chinese_char".equalsIgnoreCase(settingItem)) {
                     settingCode |= IndexAnalysisSetting.chinese_char;
