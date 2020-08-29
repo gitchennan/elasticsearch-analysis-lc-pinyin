@@ -54,7 +54,7 @@ public abstract class AbstractPinyinSegmenter implements ISegmenter {
      * 分词，获取下一个词元
      *
      * @return Lexeme 词元对象
-     * @throws java.io.IOException
+     * @throws IOException
      */
     public final Lexeme next() throws IOException {
         if (hasMoreLexemeInCache()) {

@@ -4,7 +4,7 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
+import org.elasticsearch.common.logging.Loggers;
 
 import java.util.LinkedHashSet;
 
@@ -13,7 +13,7 @@ public class PinyinHelper {
     //拼音格式
     private static final HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
 
-    private static final Logger logger = ESLoggerFactory.getLogger(PinyinHelper.class.getName());
+    private static final Logger logger = Loggers.getLogger(PinyinHelper.class,PinyinHelper.class.getName());
 
     static {
         format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
